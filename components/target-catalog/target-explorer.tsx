@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  Search,
   ExternalLink,
   Loader2,
   TriangleAlert,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { Target, TargetDetail, TargetsResponse } from "@/lib/api-types";
 import { ExampleBlock } from "@/components/shared/example-block";
@@ -217,22 +215,6 @@ export function TargetExplorer() {
       description={<>Choose from our catalog of <a href="https://targets.adaptyvbio.com" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">thousands of targets</a> — search by gene, organism, or protein family.</>}
       left={
         <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search targets (e.g. HER2, TNF, PD-L1)..."
-              value={search}
-              onChange={(e) => {
-                detailAbortRef.current?.abort();
-                setSearch(e.target.value);
-                setSelectedTarget(null);
-                setPendingTargetId(null);
-                setUiError(null);
-              }}
-              className="pl-9 h-10"
-            />
-          </div>
-
           {uiError && (
             <div
               role="alert"
