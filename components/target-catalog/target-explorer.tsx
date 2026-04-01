@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Target, TargetDetail, TargetsResponse } from "@/lib/api-types";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
-import { ProteinViewer } from "@/components/shared/protein-viewer";
+import { ProteinViewer, prefetchStructures } from "@/components/shared/protein-viewer";
 
 interface ApiPanelState {
   method: "GET" | "POST";
@@ -104,7 +104,10 @@ export function TargetExplorer() {
           return;
         }
 
-        setTargets(data.items ?? []);
+        const items = data.items ?? [];
+        setTargets(items);
+        // Eagerly prefetch all structure data so 3D viewers render faster
+        prefetchStructures(items.map((t) => t.uniprot_id).filter(Boolean));
         setApiPanelState((state) => ({
           ...state,
           response: data,

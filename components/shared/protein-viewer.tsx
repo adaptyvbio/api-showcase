@@ -69,6 +69,22 @@ async function fetchStructurePayload(uniprotId: string) {
   return loadPromise;
 }
 
+// Eagerly prefetch structure data for a list of UniProt IDs (call once at parent level)
+export function prefetchStructures(uniprotIds: string[]) {
+  for (const id of uniprotIds) {
+    fetchStructurePayload(id);
+  }
+}
+
+// Preload the 3Dmol module once (starts downloading on first import)
+let mol3dPromise: Promise<typeof import("3dmol")> | null = null;
+function preload3Dmol() {
+  if (!mol3dPromise) {
+    mol3dPromise = import("3dmol");
+  }
+  return mol3dPromise;
+}
+
 export function ProteinViewer({
   uniprotId,
   size = "sm",
@@ -83,6 +99,12 @@ export function ProteinViewer({
   const [isVisible, setIsVisible] = useState(size === "lg");
 
   const height = size === "sm" ? 140 : 360;
+
+  // Eagerly prefetch structure data and 3Dmol module
+  useEffect(() => {
+    fetchStructurePayload(uniprotId);
+    preload3Dmol();
+  }, [uniprotId]);
 
   useEffect(() => {
     if (size === "lg") {
@@ -102,7 +124,7 @@ export function ProteinViewer({
           observer.disconnect();
         }
       },
-      { rootMargin: "240px" }
+      { rootMargin: "600px" }
     );
 
     observer.observe(container);
@@ -127,7 +149,7 @@ export function ProteinViewer({
         return;
       }
 
-      const $3Dmol = await import("3dmol");
+      const $3Dmol = await preload3Dmol();
       if (cancelled || !containerRef.current) {
         return;
       }
