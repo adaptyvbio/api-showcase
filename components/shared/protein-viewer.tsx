@@ -135,7 +135,7 @@ export function ProteinViewer({
       containerRef.current.innerHTML = "";
 
       const viewer = $3Dmol.createViewer(containerRef.current, {
-        backgroundColor: "#0a0f1a",
+        backgroundColor: "#ffffff",
         antialias: true,
       });
 
@@ -218,8 +218,8 @@ export function ProteinViewer({
       className={`relative rounded-lg overflow-hidden ${className}`}
       style={{ height, minHeight: height }}
     >
-      {/* Dark background matching 3Dmol */}
-      <div className="absolute inset-0 bg-[#0a0f1a]" />
+      {/* White background */}
+      <div className="absolute inset-0 bg-white" />
 
       {/* 3Dmol container */}
       <div
@@ -234,14 +234,14 @@ export function ProteinViewer({
       {/* Loading state */}
       {status === "loading" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-white/10 border-t-blue-400 rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#E4E4E7] border-t-accent-blue rounded-full animate-spin" />
         </div>
       )}
 
       {/* Error state */}
       {status === "error" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="text-[10px] font-mono text-white/30">
+          <div className="text-[10px] font-mono text-muted-foreground">
             No structure
           </div>
         </div>
@@ -249,7 +249,7 @@ export function ProteinViewer({
 
       {/* Source label */}
       {status === "ready" && structureSource && (
-        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white/40">
+        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-black/5 text-[10px] font-mono text-muted-foreground">
           {structureSource}
         </div>
       )}
