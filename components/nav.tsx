@@ -17,8 +17,8 @@ export function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-white/80 backdrop-blur">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur">
+      <nav className="px-5 lg:px-[60px] h-[64px] flex items-center gap-4">
         <a
           href="https://adaptyvbio.com"
           aria-label="Adaptyv Bio Home"
@@ -27,20 +27,20 @@ export function Nav() {
           <Image
             src="/logos/adaptyv.svg"
             alt="Adaptyv Bio"
-            width={120}
-            height={28}
+            width={142}
+            height={24}
             priority
           />
         </a>
 
-        <div className="hidden md:flex items-center text-muted-foreground ml-auto">
+        <div className="hidden md:flex items-center text-[#58666E]">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.href}
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:bg-muted py-1.5 px-3 rounded-sm font-medium text-sm transition-colors duration-200"
+              className="hover:bg-[#F6F7F7] py-1.5 px-3 rounded-md font-medium text-sm transition-all duration-200"
             >
               {item.label}
             </a>
@@ -49,7 +49,7 @@ export function Nav() {
 
         <button
           type="button"
-          className="md:hidden ml-auto text-foreground p-2 rounded-sm hover:bg-muted"
+          className="md:hidden ml-auto text-[#142933] p-2 rounded-md hover:bg-[#F6F7F7]"
           onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-nav"
@@ -60,8 +60,8 @@ export function Nav() {
       </nav>
 
       {isMenuOpen && (
-        <div id="mobile-nav" className="md:hidden border-t border-border bg-white">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col items-center gap-2 text-muted-foreground">
+        <div id="mobile-nav" className="md:hidden border-t border-gray-100 bg-white">
+          <div className="px-6 py-4 flex flex-col items-center gap-2 text-[#58666E]">
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.href}
@@ -69,7 +69,7 @@ export function Nav() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsMenuOpen(false)}
-                className="w-full max-w-xs text-center hover:bg-muted py-2 px-3 rounded-sm font-medium text-sm transition-colors duration-200"
+                className="w-full max-w-xs text-center hover:bg-[#F6F7F7] py-2 px-3 rounded-md font-medium text-sm transition-all duration-200"
               >
                 {item.label}
               </a>
