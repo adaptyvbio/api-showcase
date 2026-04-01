@@ -60,11 +60,11 @@ function FlipWord() {
     const target = PHRASES[nextIdx];
     const maxLen = Math.max(display.length, target.length);
     let step = 0;
-    const totalSteps = maxLen + 4; // extra scramble steps
+    const totalSteps = maxLen + 2;
 
     const interval = setInterval(() => {
       step++;
-      const revealed = Math.max(0, step - 4); // delay reveal by 4 scramble frames
+      const revealed = Math.max(0, step - 2);
       const chars = [];
 
       for (let i = 0; i < target.length; i++) {
@@ -87,7 +87,7 @@ function FlipWord() {
         setPhraseIdx(nextIdx);
         setIsFlipping(false);
       }
-    }, 50);
+    }, 30);
   }, [phraseIdx, display.length, isFlipping]);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ function FlipWord() {
                 key={`${ci}-${char}`}
                 className="transition-colors duration-150"
                 style={{
-                  color: isScrambling ? "var(--color-accent-blue)" : "inherit",
+                  color: isScrambling ? "var(--color-muted-foreground)" : "inherit",
                 }}
               >
                 {char}
