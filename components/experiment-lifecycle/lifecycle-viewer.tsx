@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
@@ -14,7 +14,7 @@ import {
   Beaker,
   Activity,
 } from "lucide-react";
-import { DEMO_UPDATES } from "@/lib/mock-data";
+import { buildDemoUpdates } from "@/lib/mock-data";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
 
@@ -52,7 +52,10 @@ function formatTimestamp(iso: string): string {
 }
 
 export function LifecycleViewer() {
-  const [visibleCount, setVisibleCount] = useState(0);
+  // Build updates with timestamps relative to the user's current time
+  const updates = useMemo(() => buildDemoUpdates(new Date()), []);
+
+  const [visibleCount, setVisibleCount] = useState(1); // First event immediately visible
   const [isPlaying, setIsPlaying] = useState(false);
   const [isManual, setIsManual] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -86,7 +89,7 @@ export function LifecycleViewer() {
     }
     intervalRef.current = setInterval(() => {
       setVisibleCount((prev) => {
-        if (prev >= DEMO_UPDATES.length) {
+        if (prev >= updates.length) {
           // Loop: restart from 0 after a pause at the end
           return 0;
         }
@@ -96,7 +99,7 @@ export function LifecycleViewer() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPlaying, isManual]);
+  }, [isPlaying, isManual, updates]);
 
   // No auto-scroll — timeline is visible in full
 
@@ -107,7 +110,7 @@ export function LifecycleViewer() {
     setVisibleCount(idx + 1);
   };
 
-  const visibleUpdates = DEMO_UPDATES.slice(0, visibleCount);
+  const visibleUpdates = updates.slice(0, visibleCount);
   const activeUpdateId = visibleUpdates.at(-1)?.id ?? null;
 
   const apiResponse = visibleCount > 0
@@ -123,7 +126,7 @@ export function LifecycleViewer() {
           timestamp: u.timestamp,
         })),
         total: visibleCount,
-        has_more: visibleCount < DEMO_UPDATES.length,
+        has_more: visibleCount < updates.length,
       }
     : undefined;
 
@@ -142,7 +145,7 @@ export function LifecycleViewer() {
                 <div className="absolute left-[13px] top-4 bottom-4 w-px bg-border" />
 
                 <div className="space-y-0">
-                  {DEMO_UPDATES.map((update, i) => {
+                  {updates.map((update, i) => {
                     const isVisible = i < visibleCount;
                     const isLatest = i === visibleCount - 1;
                     const isPast = i < visibleCount - 1;
@@ -226,7 +229,7 @@ export function LifecycleViewer() {
       right={
         <ApiPanel
           method="GET"
-          endpoint={`/experiments/${DEMO_UPDATES[0].experiment_id.slice(0, 8)}…/updates`}
+          endpoint={`/experiments/${updates[0].experiment_id.slice(0, 8)}…/updates`}
           response={apiResponse}
           responseStatus={visibleCount > 0 ? 200 : undefined}
           activeTab={visibleCount > 0 ? "response" : "request"}

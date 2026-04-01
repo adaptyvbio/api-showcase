@@ -234,15 +234,21 @@ export interface DemoUpdate {
   timestamp: string;
 }
 
-const BASE_DATE = new Date("2026-03-01T10:00:00Z");
+// Offsets in hours from "now" for the demo timeline
+const DEMO_UPDATE_OFFSETS_HOURS = [0, 1, 3, 72, 168, 336, 360, 384, 408];
 
-function addHours(date: Date, hours: number): string {
-  const d = new Date(date);
-  d.setTime(d.getTime() + hours * 3600000);
-  return d.toISOString();
+export interface DemoUpdateTemplate {
+  id: string;
+  experiment_id: string;
+  experiment_code: string;
+  type: string;
+  title: string;
+  content: string;
+  status: string;
+  offsetHours: number;
 }
 
-export const DEMO_UPDATES: DemoUpdate[] = [
+const DEMO_UPDATE_TEMPLATES: DemoUpdateTemplate[] = [
   {
     id: "upd-01",
     experiment_id: DEMO_EXPERIMENT_ID,
@@ -251,7 +257,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Experiment created",
     content: "Your experiment ABS-001-042 has been created with 20 sequences targeting HER2.",
     status: "draft",
-    timestamp: addHours(BASE_DATE, 0),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[0],
   },
   {
     id: "upd-02",
@@ -261,7 +267,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Quote sent — $2,849.00",
     content: "A quote for 20 sequences × $99/seq + $869 materials has been sent for your approval.",
     status: "waiting_for_confirmation",
-    timestamp: addHours(BASE_DATE, 1),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[1],
   },
   {
     id: "upd-03",
@@ -271,7 +277,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Quote accepted",
     content: "You've confirmed the experiment. We're ordering target materials now.",
     status: "waiting_for_materials",
-    timestamp: addHours(BASE_DATE, 3),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[2],
   },
   {
     id: "upd-04",
@@ -281,7 +287,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Materials received",
     content: "HER2 target protein received. Starting gene synthesis for your 20 VHH sequences.",
     status: "in_production",
-    timestamp: addHours(BASE_DATE, 72),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[3],
   },
   {
     id: "upd-05",
@@ -291,7 +297,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Gene synthesis complete",
     content: "All 20 DNA constructs synthesized successfully. Moving to expression.",
     status: "in_production",
-    timestamp: addHours(BASE_DATE, 168),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[4],
   },
   {
     id: "upd-06",
@@ -301,7 +307,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Expression & purification complete",
     content: `${DEMO_SEQUENCES.length - DEMO_RESULT_COUNTS.no_expression} of ${DEMO_SEQUENCES.length} sequences expressed. VHH-19 showed no detectable expression. Proceeding with 19 candidates + 1 control.`,
     status: "in_production",
-    timestamp: addHours(BASE_DATE, 336),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[5],
   },
   {
     id: "upd-07",
@@ -311,7 +317,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "BLI measurement in progress",
     content: "Running binding kinetics on the Gator BLI instrument. Estimated completion: 4 hours.",
     status: "data_analysis",
-    timestamp: addHours(BASE_DATE, 360),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[6],
   },
   {
     id: "upd-08",
@@ -321,7 +327,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Data analysis complete",
     content: `Kinetic fits processed. ${DEMO_RESULT_COUNTS.strong} strong binders identified (KD < 5 nM). Results under review.`,
     status: "in_review",
-    timestamp: addHours(BASE_DATE, 384),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[7],
   },
   {
     id: "upd-09",
@@ -331,9 +337,26 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     title: "Results published",
     content: `Your binding data is ready. ${DEMO_RESULT_COUNTS.strong} strong binders, ${DEMO_RESULT_COUNTS.medium} medium, ${DEMO_RESULT_COUNTS.weak} weak, ${DEMO_RESULT_COUNTS.non_binder} non-binders, ${DEMO_RESULT_COUNTS.no_expression} no expression. Data package available for download.`,
     status: "done",
-    timestamp: addHours(BASE_DATE, 408),
+    offsetHours: DEMO_UPDATE_OFFSETS_HOURS[8],
   },
 ];
+
+/** Build demo updates with timestamps relative to the given base time */
+export function buildDemoUpdates(baseTime: Date): DemoUpdate[] {
+  return DEMO_UPDATE_TEMPLATES.map((t) => ({
+    id: t.id,
+    experiment_id: t.experiment_id,
+    experiment_code: t.experiment_code,
+    type: t.type,
+    title: t.title,
+    content: t.content,
+    status: t.status,
+    timestamp: new Date(baseTime.getTime() + t.offsetHours * 3600000).toISOString(),
+  }));
+}
+
+// Legacy export for static contexts — uses a fixed base
+export const DEMO_UPDATES: DemoUpdate[] = buildDemoUpdates(new Date("2026-03-01T10:00:00Z"));
 
 // ─── Lifecycle Stages (for the create experiment response) ───────────────
 
