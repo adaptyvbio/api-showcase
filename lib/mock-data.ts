@@ -336,8 +336,8 @@ const DEMO_CREATED_AT = new Date().toISOString();
 const DEMO_EXPERIMENT_URL = `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`;
 const DEMO_DATA_PACKAGE_URL = `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`;
 const DEMO_SEQUENCE_COUNT = DEMO_SEQUENCES.length;
-const DEMO_PRICE_PER_SEQUENCE_CENTS = 9900;
-const DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS = 1749;
+export const DEMO_PRICE_PER_SEQUENCE_CENTS = 9900;
+export const DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS = 1749;
 
 const DEMO_EXPERIMENT_SPEC: ExperimentInfo["experiment_spec"] = {
   experiment_type: "screening",

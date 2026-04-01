@@ -21,7 +21,10 @@ import {
   PRESET_TARGETS,
   DEMO_SEQUENCES,
   MOCK_CREATE_RESPONSE,
+  DEMO_PRICE_PER_SEQUENCE_CENTS,
+  DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS,
 } from "@/lib/mock-data";
+import { formatCents } from "@/lib/utils";
 import { parseSequences } from "@/lib/sequence-parser";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
@@ -301,6 +304,42 @@ export function ExperimentBuilder() {
               className="hidden"
             />
           </div>
+
+          {/* Cost estimate */}
+          {sequences.length > 0 && (
+            <div className="rounded-sm border border-border/50 bg-muted/20 p-3 space-y-1.5">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                Estimated cost
+              </div>
+              <div className="flex items-baseline justify-between text-xs">
+                <span className="text-muted-foreground">
+                  Assay ({sequences.length} seq × {formatCents(DEMO_PRICE_PER_SEQUENCE_CENTS)})
+                </span>
+                <span className="font-mono text-foreground">
+                  {formatCents(sequences.length * DEMO_PRICE_PER_SEQUENCE_CENTS)}
+                </span>
+              </div>
+              {needsTarget && (
+                <div className="flex items-baseline justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    Materials ({sequences.length} seq × {formatCents(DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS)})
+                  </span>
+                  <span className="font-mono text-foreground">
+                    {formatCents(sequences.length * DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS)}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-baseline justify-between text-xs pt-1.5 border-t border-border/50">
+                <span className="font-medium text-foreground">Total</span>
+                <span className="font-mono font-semibold text-foreground">
+                  {formatCents(
+                    sequences.length * DEMO_PRICE_PER_SEQUENCE_CENTS +
+                    (needsTarget ? sequences.length * DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS : 0)
+                  )}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Submit */}
           {submitted ? (
