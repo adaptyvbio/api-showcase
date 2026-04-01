@@ -13,7 +13,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P00533",
     family: "ErbB receptor tyrosine kinase",
-    url: "https://targets.adaptyvbio.com/protein/0a7ed4af-egfr",
+    url: "https://targets.adaptyvbio.com/protein/0a7ed4af-cd81-4c3b-8135-72bc91f44aa5",
   },
   {
     id: "comp-her2-human",
@@ -22,7 +22,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P04626",
     family: "ErbB receptor tyrosine kinase",
-    url: "https://targets.adaptyvbio.com/protein/e9cb07ba-her2",
+    url: "https://targets.adaptyvbio.com/protein/e9cb07ba-3c0b-44c9-b7bb-03a746a06b1d",
   },
   {
     id: "comp-il7r-human",
@@ -31,7 +31,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P16871",
     family: "Type I cytokine receptor",
-    url: "https://targets.adaptyvbio.com/protein/79fbe63f-il7r",
+    url: "https://targets.adaptyvbio.com/protein/79fbe63f-a58c-4e07-a1ef-b09827a6cfc5",
   },
   {
     id: "comp-pdl1-human",
@@ -40,7 +40,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "Q9NZQ7",
     family: "B7 / CD28 superfamily",
-    url: "https://targets.adaptyvbio.com/protein/0aa3b309-pdl1",
+    url: "https://targets.adaptyvbio.com/protein/0aa3b309-06c5-4285-93cf-5cf6c21e1e3b",
   },
   {
     id: "comp-tnf-human",
@@ -49,7 +49,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P01375",
     family: "TNF superfamily",
-    url: "https://targets.adaptyvbio.com/protein/6b3c7f73-tnf",
+    url: "https://targets.adaptyvbio.com/protein/6b3c7f73-bb62-4a03-abf6-d9b7f4f1a2c8",
   },
   {
     id: "comp-vegfa-human",
@@ -58,15 +58,24 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P15692",
     family: "PDGF/VEGF growth factor",
-    url: "https://targets.adaptyvbio.com/protein/c8dd6dbd-vegfa",
+    url: "https://targets.adaptyvbio.com/protein/c8dd6dbd-93a4-4f67-8c72-e5d3b8a2f1d9",
   },
 ];
+
+function productUrl(vendor: string, catalog: string): string {
+  const slug = vendor.toLowerCase().startsWith("acro") ? "Acro"
+    : vendor.toLowerCase().startsWith("sino") ? "Sino"
+    : vendor.toLowerCase().startsWith("biotechne") ? "Biotechne"
+    : vendor;
+  return `https://targets.adaptyvbio.com/product/${slug}/${catalog}`;
+}
 
 interface FallbackProduct {
   vendor: string;
   catalog_number: string;
   tags: string[];
   expression_system: string;
+  url: string;
 }
 
 interface FallbackDetailData {
@@ -84,8 +93,8 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Cell membrane"],
     description: "Receptor tyrosine kinase that binds EGF family ligands. Key oncology target overexpressed in many solid tumors. Binding domain (extracellular domain III) is the primary epitope for therapeutic antibodies like cetuximab.",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "EGR-H5222", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
-      { vendor: "Sino Biological", catalog_number: "10001-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Acro Biosystems", catalog_number: "EGR-H5222", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Acro Biosystems", "EGR-H5222") },
+      { vendor: "Sino Biological", catalog_number: "10001-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Sino Biological", "10001-H08H") },
     ],
   },
   "comp-her2-human": {
@@ -94,8 +103,8 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Cell membrane"],
     description: "Receptor tyrosine kinase with no known ligand that heterodimerizes with other ErbB family members. Overexpressed in ~20% of breast cancers. Target of trastuzumab (Herceptin) and pertuzumab.",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "HE2-H5225", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
-      { vendor: "Sino Biological", catalog_number: "10004-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Acro Biosystems", catalog_number: "HE2-H5225", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Acro Biosystems", "HE2-H5225") },
+      { vendor: "Sino Biological", catalog_number: "10004-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Sino Biological", "10004-H08H") },
     ],
   },
   "comp-il7r-human": {
@@ -104,7 +113,7 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Cell membrane"],
     description: "Alpha chain of the interleukin-7 receptor. Critical for T-cell and B-cell development. Gain-of-function mutations implicated in T-cell acute lymphoblastic leukemia (T-ALL).",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "IL7-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Acro Biosystems", catalog_number: "IL7-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Acro Biosystems", "IL7-H5229") },
     ],
   },
   "comp-pdl1-human": {
@@ -113,8 +122,8 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Cell membrane"],
     description: "Immune checkpoint ligand that binds PD-1 receptor on T cells to suppress anti-tumor immunity. Target of atezolizumab, durvalumab, and avelumab. One of the most important immuno-oncology targets.",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "PD1-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
-      { vendor: "Biotechne", catalog_number: "9049-B7", tags: ["Fc Tag", "ECD"], expression_system: "CHO" },
+      { vendor: "Acro Biosystems", catalog_number: "PD1-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293", url: productUrl("Acro Biosystems", "PD1-H5229") },
+      { vendor: "Biotechne", catalog_number: "9049-B7", tags: ["Fc Tag", "ECD"], expression_system: "CHO", url: productUrl("Biotechne", "9049-B7") },
     ],
   },
   "comp-tnf-human": {
@@ -123,8 +132,8 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Secreted", "Cell membrane"],
     description: "Pro-inflammatory cytokine that mediates systemic inflammation. Exists as a homotrimer. Target of adalimumab (Humira), infliximab (Remicade), and etanercept. One of the best-selling drug target classes globally.",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "TNA-H5228", tags: ["His Tag"], expression_system: "E. coli" },
-      { vendor: "Sino Biological", catalog_number: "10602-HNAE", tags: ["His Tag"], expression_system: "E. coli" },
+      { vendor: "Acro Biosystems", catalog_number: "TNA-H5228", tags: ["His Tag"], expression_system: "E. coli", url: productUrl("Acro Biosystems", "TNA-H5228") },
+      { vendor: "Sino Biological", catalog_number: "10602-HNAE", tags: ["His Tag"], expression_system: "E. coli", url: productUrl("Sino Biological", "10602-HNAE") },
     ],
   },
   "comp-vegfa-human": {
@@ -133,8 +142,8 @@ const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
     subcellular_locations: ["Secreted"],
     description: "Vascular endothelial growth factor that drives angiogenesis. Key target in oncology (bevacizumab/Avastin) and ophthalmology (ranibizumab, aflibercept). Functions as disulfide-linked homodimer.",
     products: [
-      { vendor: "Acro Biosystems", catalog_number: "VE5-H4210", tags: ["His Tag"], expression_system: "HEK293" },
-      { vendor: "Biotechne", catalog_number: "293-VE", tags: ["Carrier-free"], expression_system: "CHO" },
+      { vendor: "Acro Biosystems", catalog_number: "VE5-H4210", tags: ["His Tag"], expression_system: "HEK293", url: productUrl("Acro Biosystems", "VE5-H4210") },
+      { vendor: "Biotechne", catalog_number: "293-VE", tags: ["Carrier-free"], expression_system: "CHO", url: productUrl("Biotechne", "293-VE") },
     ],
   },
 };

@@ -13,6 +13,7 @@ export interface TargetProduct {
   catalog_number: string;
   tags: string[];
   expression_system: string;
+  url: string;
 }
 
 export interface TargetDetail extends Target {

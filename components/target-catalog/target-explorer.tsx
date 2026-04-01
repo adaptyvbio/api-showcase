@@ -249,27 +249,42 @@ export function TargetExplorer() {
               onBack={() => setSelectedTarget(null)}
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {targets.map((t) => (
-                <TargetCard
-                  key={t.id}
-                  target={t}
-                  isPending={pendingTargetId === t.id}
-                  onClick={() => handleSelectTarget(t)}
-                />
-              ))}
-              {targets.length === 0 && isLoading && (
-                <div className="col-span-2 flex items-center justify-center gap-2 rounded-sm border border-dashed border-border py-8 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Searching targets...
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {targets.map((t) => (
+                  <TargetCard
+                    key={t.id}
+                    target={t}
+                    isPending={pendingTargetId === t.id}
+                    onClick={() => handleSelectTarget(t)}
+                  />
+                ))}
+                {targets.length === 0 && isLoading && (
+                  <div className="col-span-2 flex items-center justify-center gap-2 rounded-sm border border-dashed border-border py-8 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Searching targets...
+                  </div>
+                )}
+                {targets.length === 0 && !isLoading && (
+                  <div className="col-span-2 text-center py-8 text-muted-foreground text-sm">
+                    No targets found
+                  </div>
+                )}
+              </div>
+              {targets.length > 0 && (
+                <div className="text-center pt-4">
+                  <a
+                    href="https://targets.adaptyvbio.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-accent-blue hover:underline"
+                  >
+                    Browse thousands more targets
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               )}
-              {targets.length === 0 && !isLoading && (
-                <div className="col-span-2 text-center py-8 text-muted-foreground text-sm">
-                  No targets found
-                </div>
-              )}
-            </div>
+            </>
           )}
         </div>
       }
@@ -370,9 +385,16 @@ function TargetDetailView({
         </h3>
         <div className="flex items-center gap-2 mb-3">
           {cleanId && (
-            <Badge variant="outline" className="text-[10px] font-mono">
-              UniProt: {cleanId}
-            </Badge>
+            <a
+              href={`https://www.uniprot.org/uniprotkb/${cleanId}/entry`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline"
+            >
+              <Badge variant="outline" className="text-[10px] font-mono hover:border-accent-blue hover:text-accent-blue transition-colors cursor-pointer">
+                UniProt: {cleanId}
+              </Badge>
+            </a>
           )}
           <span className="text-[11px] text-muted-foreground">
             {target.organism}
@@ -393,9 +415,17 @@ function TargetDetailView({
           {target.gene_names?.length > 1 && (
             <div className="flex gap-1 flex-wrap">
               {target.gene_names.map((g) => (
-                <Badge key={g} variant="outline" className="text-[10px] font-mono">
-                  {g}
-                </Badge>
+                <a
+                  key={g}
+                  href={`https://www.uniprot.org/uniprotkb?query=${encodeURIComponent(g)}+AND+organism_name%3AHuman`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="no-underline"
+                >
+                  <Badge variant="outline" className="text-[10px] font-mono hover:border-accent-blue hover:text-accent-blue transition-colors cursor-pointer">
+                    {g}
+                  </Badge>
+                </a>
               ))}
             </div>
           )}
@@ -413,7 +443,13 @@ function TargetDetailView({
               </span>
               <div className="mt-1.5 space-y-1.5">
                 {target.details.products.map((p) => (
-                  <div key={p.catalog_number} className="flex items-center gap-2">
+                  <a
+                    key={p.catalog_number}
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-sm px-2 py-1.5 -mx-2 hover:bg-muted/30 transition-colors no-underline"
+                  >
                     <Badge variant="secondary" className="text-[10px] font-mono shrink-0">
                       {p.vendor}
                     </Badge>
@@ -423,23 +459,22 @@ function TargetDetailView({
                     <span className="text-[10px] text-muted-foreground/60">
                       {p.tags.join(", ")}
                     </span>
-                  </div>
+                    <ExternalLink className="w-2.5 h-2.5 text-muted-foreground/40 ml-auto shrink-0" />
+                  </a>
                 ))}
               </div>
+              <a
+                href={target.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] text-accent-blue hover:underline mt-1"
+              >
+                View more on Target Catalog
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
             </div>
           )}
 
-          <div>
-            <a
-              href={target.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-accent-blue hover:underline"
-            >
-              View on Target Catalog
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
         </div>
       )}
     </div>

@@ -29,6 +29,7 @@ export const targetDetailSchema = targetSchema.extend({
       catalog_number: z.string().min(1),
       tags: z.array(z.string()),
       expression_system: z.string().min(1),
+      url: z.string().min(1),
     })),
   }),
 });
