@@ -3,15 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Search,
-  MapPin,
-  DollarSign,
   ExternalLink,
   Loader2,
   TriangleAlert,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { formatCents } from "@/lib/utils";
 import type { Target, TargetDetail, TargetsResponse } from "@/lib/api-types";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
@@ -298,6 +295,8 @@ function TargetCard({
   isPending: boolean;
   onClick: () => void;
 }) {
+  const cleanId = target.uniprot_id?.split("-")[0];
+
   return (
     <button
       onClick={onClick}
@@ -321,22 +320,11 @@ function TargetCard({
             <Loader2 className="h-4 w-4 shrink-0 animate-spin text-accent-blue" />
           )}
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="secondary" className="text-[10px] font-mono">
-            {target.vendor_name}
+        {cleanId && (
+          <Badge variant="outline" className="text-[10px] font-mono">
+            {cleanId}
           </Badge>
-          {target.uniprot_id && (
-            <Badge variant="outline" className="text-[10px] font-mono">
-              <MapPin className="w-2.5 h-2.5 mr-0.5" />
-              {target.uniprot_id.split("-")[0]}
-            </Badge>
-          )}
-          <span className="ml-auto text-xs font-mono text-muted-foreground flex items-center gap-0.5">
-            <DollarSign className="w-3 h-3" />
-            {formatCents(target.pricing.price_per_sequence_cents)}
-            <span className="text-[10px]">/seq</span>
-          </span>
-        </div>
+        )}
       </div>
     </button>
   );
@@ -349,6 +337,8 @@ function TargetDetailView({
   target: TargetDetail;
   onBack: () => void;
 }) {
+  const cleanId = target.uniprot_id?.split("-")[0];
+
   return (
     <div className="space-y-4">
       <button
@@ -369,25 +359,27 @@ function TargetDetailView({
 
       <div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          {target.name}
+          {target.details?.gene_names?.length > 0
+            ? target.details.gene_names.join(" / ")
+            : target.name}
         </h3>
         <div className="flex items-center gap-2 mb-3">
-          <Badge variant="secondary" className="text-[10px] font-mono">
-            {target.vendor_name}
-          </Badge>
-          <Badge variant="outline" className="text-[10px] font-mono">
-            {target.catalog_number}
-          </Badge>
+          {cleanId && (
+            <Badge variant="outline" className="text-[10px] font-mono">
+              UniProt: {cleanId}
+            </Badge>
+          )}
+          {target.details && (
+            <span className="text-[11px] text-muted-foreground">
+              {target.details.organism}
+            </span>
+          )}
         </div>
       </div>
 
       {target.details && (
         <div className="space-y-3 text-sm">
           <div className="grid grid-cols-2 gap-2">
-            {target.details.gene_names?.length > 0 && (
-              <Detail label="Gene" value={target.details.gene_names.join(", ")} />
-            )}
-            <Detail label="Organism" value={target.details.organism} />
             <Detail label="MW" value={target.details.molecular_weight} />
             <Detail label="Length" value={`${target.details.sequence_length} aa`} />
             {target.details.expression_system && (
@@ -411,7 +403,23 @@ function TargetDetailView({
               {target.details.description}
             </p>
           )}
-          <div className="pt-2">
+
+          {/* Product info */}
+          <div className="pt-2 border-t border-border/50">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Available from
+            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="secondary" className="text-[10px] font-mono">
+                {target.vendor_name}
+              </Badge>
+              <span className="text-xs font-mono text-muted-foreground">
+                {target.catalog_number}
+              </span>
+            </div>
+          </div>
+
+          <div>
             <a
               href={target.url}
               target="_blank"
