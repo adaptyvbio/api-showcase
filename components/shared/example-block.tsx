@@ -32,16 +32,15 @@ export function ExampleBlock({
           <span className="inline-flex items-center px-2 py-1 rounded-sm bg-accent-blue-muted text-accent-blue font-mono text-xs font-semibold tracking-[0.08em]">
             {String(number).padStart(2, "0")}
           </span>
-          <div className="flex items-center gap-3 mt-3">
-            <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground leading-tight">
-              {title}
-            </h2>
-            {endpoint && (
-              <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
-                {endpoint}
-              </span>
-            )}
-          </div>
+          <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground leading-tight mt-3">
+            {title}
+          </h2>
+          {endpoint && (
+            <span className="inline-flex font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm mt-2">
+              <span className="text-accent-blue font-semibold">{endpoint.split(" ")[0]}</span>
+              <span className="ml-1.5">{endpoint.split(" ").slice(1).join(" ")}</span>
+            </span>
+          )}
           <p className="mt-2 text-[15px] text-foreground/60 max-w-[540px] leading-relaxed tracking-[-0.005em]">
             {description}
           </p>
