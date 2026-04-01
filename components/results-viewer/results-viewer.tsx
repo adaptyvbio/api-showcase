@@ -283,19 +283,18 @@ export function ResultsViewer() {
                             }}
                           />
 
-                          {/* Tooltip on hover */}
+                          {/* Tooltip on hover — anchored at bar top */}
                           {hoveredIdx === i && (
                             <div
-                              className={cn(
-                                "absolute z-20 bg-card border border-border rounded-sm p-2.5 text-xs whitespace-nowrap",
-                                isNonBinder ? "bottom-2" : "bottom-full mb-2",
-                              )}
+                              className="absolute z-20 bg-card border border-border rounded-sm p-2.5 text-xs whitespace-nowrap shadow-sm"
                               style={{
+                                bottom: isNonBinder ? "4px" : `${height}%`,
+                                marginBottom: "8px",
                                 [isLeftHalf ? "left" : "right"]: "0",
                               }}
                             >
-                              <div className="flex items-center gap-1.5 mb-1">
-                                <span className="font-medium text-foreground">
+                              <div className="flex items-center gap-1.5 mb-1.5">
+                                <span className="font-semibold text-foreground">
                                   {r.sequence_name}
                                 </span>
                                 {isControl && (
@@ -305,22 +304,34 @@ export function ResultsViewer() {
                                 )}
                               </div>
                               {r.kd != null ? (
-                                <div className="space-y-0.5 text-muted-foreground">
-                                  <div className="flex justify-between gap-3">
-                                    <span>KD</span>
-                                    <span className="font-mono">{formatKd(r.kd)}</span>
+                                <div className="space-y-0.5 text-muted-foreground text-[11px]">
+                                  <div className="flex justify-between gap-4">
+                                    <span className="text-foreground/50">K<sub>D</sub></span>
+                                    <span className="font-mono text-foreground">{formatKd(r.kd)}</span>
                                   </div>
-                                  <div className="flex justify-between gap-3">
-                                    <span>k<sub>on</sub></span>
+                                  <div className="flex justify-between gap-4">
+                                    <span className="text-foreground/50">k<sub>on</sub></span>
                                     <span className="font-mono">{formatScientific(r.kon!)}</span>
                                   </div>
-                                  <div className="flex justify-between gap-3">
-                                    <span>k<sub>off</sub></span>
+                                  <div className="flex justify-between gap-4">
+                                    <span className="text-foreground/50">k<sub>off</sub></span>
                                     <span className="font-mono">{formatScientific(r.koff!)}</span>
+                                  </div>
+                                  {r.r_squared != null && (
+                                    <div className="flex justify-between gap-4">
+                                      <span className="text-foreground/50">R²</span>
+                                      <span className="font-mono">{r.r_squared.toFixed(3)}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between gap-4 pt-1 border-t border-border/50">
+                                    <span className="text-foreground/50">Binding</span>
+                                    <span className={cn("font-medium", BINDING_TEXT_COLORS[r.binding_strength])}>
+                                      {r.binding_strength.replace("_", " ")}
+                                    </span>
                                   </div>
                                 </div>
                               ) : (
-                                <div className="text-muted-foreground/60 italic">
+                                <div className="text-muted-foreground/60 italic text-[11px]">
                                   {r.binding_strength === "no_expression" ? "No expression" : "No binding detected"}
                                 </div>
                               )}
