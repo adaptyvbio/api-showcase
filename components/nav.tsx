@@ -72,13 +72,13 @@ export function Nav() {
             href="https://docs.adaptyvbio.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium hover:bg-accent-blue-hover transition-colors duration-150"
+            className="hidden sm:inline-flex h-9 px-4 items-center rounded-sm bg-accent-blue text-white text-sm font-medium hover:bg-accent-blue-hover transition-colors duration-150"
           >
             API Docs
           </a>
 
           <button
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-sm hover:bg-muted transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -88,7 +88,7 @@ export function Nav() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden bg-card border-b border-border shadow-lg">
+        <div className="lg:hidden bg-card border-b border-border shadow-none">
           {SECTIONS.map(({ id, label }) => (
             <button
               key={id}
@@ -103,7 +103,7 @@ export function Nav() {
               href="https://docs.adaptyvbio.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium"
+              className="inline-flex h-9 px-4 items-center rounded-sm bg-accent-blue text-white text-sm font-medium"
             >
               API Docs
             </a>

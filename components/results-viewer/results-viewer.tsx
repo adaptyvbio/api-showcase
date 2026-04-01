@@ -49,6 +49,18 @@ function getBarHeight(kd: number | null): number {
 type SortKey = "name" | "kd" | "binding_strength";
 type SortDir = "asc" | "desc";
 
+function getAriaSort(
+  activeSortKey: SortKey,
+  activeSortDir: SortDir,
+  column: SortKey
+): "ascending" | "descending" | "none" {
+  if (activeSortKey !== column) {
+    return "none";
+  }
+
+  return activeSortDir === "asc" ? "ascending" : "descending";
+}
+
 function renderSortIcon(
   activeSortKey: SortKey,
   activeSortDir: SortDir,
@@ -171,7 +183,7 @@ export function ResultsViewer() {
               { label: "Non-binder", count: stats.nonBinder, color: "text-binding-non" },
               { label: "No expr.", count: stats.noExpression, color: "text-muted-foreground" },
             ].map(({ label, count, color }) => (
-              <div key={label} className="text-center p-2 rounded-lg bg-muted/30">
+              <div key={label} className="text-center p-2 rounded-sm bg-muted/30">
                 <div className={cn("text-lg font-semibold font-mono", color)}>
                   {count}
                 </div>
@@ -182,9 +194,10 @@ export function ResultsViewer() {
 
           {/* View toggle + Download */}
           <div className="flex items-center gap-2">
-            <div className="flex rounded-md border border-border overflow-hidden">
+            <div className="flex rounded-sm border border-border overflow-hidden">
               <button
                 onClick={() => setView("chart")}
+                aria-pressed={view === "chart"}
                 className={cn(
                   "px-3 py-1.5 text-xs font-medium transition-colors",
                   view === "chart"
@@ -197,6 +210,7 @@ export function ResultsViewer() {
               </button>
               <button
                 onClick={() => setView("table")}
+                aria-pressed={view === "table"}
                 className={cn(
                   "px-3 py-1.5 text-xs font-medium transition-colors border-l border-border",
                   view === "table"
@@ -254,7 +268,7 @@ export function ResultsViewer() {
 
                       {/* Tooltip on hover */}
                       {hoveredIdx === i && (
-                        <div className="absolute bottom-full mb-2 z-20 bg-card border border-border shadow-lg rounded-lg p-2.5 text-xs whitespace-nowrap left-1/2 -translate-x-1/2">
+                        <div className="absolute bottom-full mb-2 z-20 bg-card border border-border shadow-none rounded-sm p-2.5 text-xs whitespace-nowrap left-1/2 -translate-x-1/2">
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="font-medium text-foreground">
                               {r.sequence_name}
@@ -340,37 +354,61 @@ export function ResultsViewer() {
             </div>
           ) : (
             /* Table view */
-            <div className="border border-border rounded-lg overflow-hidden">
+            <div className="border border-border rounded-sm overflow-hidden">
               <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
                 <table className="w-full text-xs">
+                  <caption className="sr-only">
+                    Binding kinetics and classification for the demo experiment sequences.
+                  </caption>
                   <thead className="sticky top-0 z-10">
-                    <tr className="bg-muted/50 border-b border-border">
+                    <tr className="bg-secondary/50 border-b border-border">
                       <th
-                        onClick={() => handleSort("name")}
-                        className="text-left px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                        scope="col"
+                        aria-sort={getAriaSort(sortKey, sortDir, "name")}
+                        className="text-left px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground"
                       >
-                        Name {renderSortIcon(sortKey, sortDir, "name")}
+                        <button
+                          type="button"
+                          onClick={() => handleSort("name")}
+                          className="inline-flex items-center gap-1 hover:text-foreground transition-none"
+                        >
+                          Name {renderSortIcon(sortKey, sortDir, "name")}
+                        </button>
                       </th>
                       <th
-                        onClick={() => handleSort("kd")}
-                        className="text-right px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                        scope="col"
+                        aria-sort={getAriaSort(sortKey, sortDir, "kd")}
+                        className="text-right px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground"
                       >
-                        KD {renderSortIcon(sortKey, sortDir, "kd")}
+                        <button
+                          type="button"
+                          onClick={() => handleSort("kd")}
+                          className="inline-flex items-center gap-1 hover:text-foreground transition-none"
+                        >
+                          KD {renderSortIcon(sortKey, sortDir, "kd")}
+                        </button>
                       </th>
-                      <th className="text-right px-3 py-2 font-medium text-muted-foreground">
+                      <th scope="col" className="text-right px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground">
                         k_on
                       </th>
-                      <th className="text-right px-3 py-2 font-medium text-muted-foreground">
+                      <th scope="col" className="text-right px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground">
                         k_off
                       </th>
-                      <th className="text-right px-3 py-2 font-medium text-muted-foreground">
+                      <th scope="col" className="text-right px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground">
                         R²
                       </th>
                       <th
-                        onClick={() => handleSort("binding_strength")}
-                        className="text-left px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                        scope="col"
+                        aria-sort={getAriaSort(sortKey, sortDir, "binding_strength")}
+                        className="text-left px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground"
                       >
-                        Binding {renderSortIcon(sortKey, sortDir, "binding_strength")}
+                        <button
+                          type="button"
+                          onClick={() => handleSort("binding_strength")}
+                          className="inline-flex items-center gap-1 hover:text-foreground transition-none"
+                        >
+                          Binding {renderSortIcon(sortKey, sortDir, "binding_strength")}
+                        </button>
                       </th>
                     </tr>
                   </thead>
@@ -381,8 +419,8 @@ export function ResultsViewer() {
                         <tr
                           key={r.sequence_id}
                           className={cn(
-                            "border-b border-border/50 last:border-0",
-                            isControl ? "bg-muted/20" : "hover:bg-muted/10"
+                            "border-b border-border last:border-0",
+                            isControl ? "bg-muted/20" : "hover:bg-muted/10 transition-none"
                           )}
                         >
                           <td className="px-3 py-2 font-mono text-foreground">
@@ -434,7 +472,7 @@ export function ResultsViewer() {
           )}
 
           {/* Download data package */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+          <div className="flex items-center gap-3 p-3 rounded-sm bg-muted/30 border border-border/50">
             <FileDown className="w-5 h-5 text-muted-foreground shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-foreground">Data Package</p>

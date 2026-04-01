@@ -54,16 +54,16 @@ export function ExperimentTypesSection() {
                 key={et.type}
                 onClick={() => setSelectedType(et)}
                 className={cn(
-                  "w-full text-left rounded-lg border p-4 transition-all duration-150",
+                  "w-full text-left rounded-sm border p-4 transition-all duration-150",
                   isSelected
-                    ? "border-accent-blue/30 bg-accent-blue/[0.03] shadow-sm"
+                    ? "border-accent-blue/30 bg-accent-blue/[0.03] shadow-none"
                     : "border-border hover:border-border hover:bg-muted/30"
                 )}
               >
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border",
+                      "w-8 h-8 rounded-sm flex items-center justify-center shrink-0 border",
                       colorClasses
                     )}
                   >

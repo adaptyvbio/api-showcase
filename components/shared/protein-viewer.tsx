@@ -215,7 +215,7 @@ export function ProteinViewer({
 
   return (
     <div
-      className={`relative rounded-lg overflow-hidden ${className}`}
+      className={`relative rounded-sm overflow-hidden ${className}`}
       style={{ height, minHeight: height }}
     >
       {/* White background */}
@@ -243,7 +243,6 @@ export function ProteinViewer({
             // Forward mouse events to the 3Dmol canvas
             const canvas = containerRef.current?.querySelector("canvas");
             if (!canvas) return;
-            const rect = canvas.getBoundingClientRect();
             const synth = new MouseEvent(e.type, {
               clientX: e.clientX,
               clientY: e.clientY,
@@ -292,7 +291,7 @@ export function ProteinViewer({
       {/* Loading state */}
       {status === "loading" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-[#E4E4E7] border-t-accent-blue rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#E4E4E7] border-t-accent-blue rounded-sm animate-spin" />
         </div>
       )}
 

@@ -20,11 +20,11 @@ function SequenceChip() {
 
   return (
     <div
-      className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full border border-border/60 bg-card/80 mb-8 cursor-default select-none"
+      className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-sm border border-border/60 bg-card/80 mb-8 cursor-default select-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-success pulse-dot shrink-0" />
+      <span className="w-1.5 h-1.5 rounded-sm bg-success pulse-dot shrink-0" />
       <span className="font-mono text-xs font-semibold tracking-[0.12em]">
         {AA_LETTERS.map((aa, i) => (
           <span
@@ -167,7 +167,7 @@ export function Hero() {
         <div className="mt-10 flex items-center justify-center gap-3">
           <a
             href="#experiment-types"
-            className="h-11 px-6 inline-flex items-center rounded-lg bg-accent-blue text-white text-sm font-semibold hover:bg-accent-blue-hover transition-colors duration-150 tracking-[-0.005em]"
+            className="h-11 px-6 inline-flex items-center rounded-sm bg-accent-blue text-white text-sm font-semibold hover:bg-accent-blue-hover transition-colors duration-150 tracking-[-0.005em]"
           >
             Explore Examples
           </a>
@@ -175,7 +175,7 @@ export function Hero() {
             href="https://docs.adaptyvbio.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="h-11 px-6 inline-flex items-center rounded-lg border border-border text-foreground/60 text-sm font-medium hover:bg-muted hover:border-border transition-colors duration-150 tracking-[-0.005em]"
+            className="h-11 px-6 inline-flex items-center rounded-sm border border-border text-foreground/60 text-sm font-medium hover:bg-muted hover:border-border transition-colors duration-150 tracking-[-0.005em]"
           >
             API Docs
           </a>

@@ -14,7 +14,7 @@ import {
   Beaker,
   Activity,
 } from "lucide-react";
-import { DEMO_UPDATES, DEMO_EXPERIMENT_CODE } from "@/lib/mock-data";
+import { DEMO_UPDATES } from "@/lib/mock-data";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
 
@@ -108,6 +108,7 @@ export function LifecycleViewer() {
   };
 
   const visibleUpdates = DEMO_UPDATES.slice(0, visibleCount);
+  const activeUpdateId = visibleUpdates.at(-1)?.id ?? null;
 
   const apiResponse = visibleCount > 0
     ? {
@@ -153,11 +154,14 @@ export function LifecycleViewer() {
                     const TypeIcon = TYPE_ICONS[update.type] ?? FileText;
 
                     return (
-                      <div
+                      <button
                         key={update.id}
+                        type="button"
                         onClick={() => handleClickUpdate(i)}
+                        aria-current={update.id === activeUpdateId ? "step" : undefined}
+                        aria-label={`Jump to update ${i + 1}: ${update.title}`}
                         className={cn(
-                          "relative flex gap-3 py-3 transition-all duration-500 cursor-pointer rounded-lg -mx-1 px-1",
+                          "relative flex w-full gap-3 py-3 text-left transition-all duration-500 cursor-pointer rounded-sm -mx-1 px-1",
                           isFuture && "opacity-[0.08]",
                           isPast && "opacity-40 hover:opacity-70",
                           isLatest && "opacity-100",
@@ -166,7 +170,7 @@ export function LifecycleViewer() {
                         {/* Timeline dot */}
                         <div
                           className={cn(
-                            "relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ring-2",
+                            "relative z-10 w-7 h-7 rounded-sm flex items-center justify-center shrink-0 transition-all duration-500 ring-2",
                             isLatest
                               ? cn(colors.bg, colors.text, colors.ring)
                               : isPast
@@ -213,7 +217,7 @@ export function LifecycleViewer() {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

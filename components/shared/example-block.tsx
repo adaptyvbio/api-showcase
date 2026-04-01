@@ -29,7 +29,7 @@ export function ExampleBlock({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="mb-6">
-          <span className="inline-flex items-center px-2 py-1 rounded-md bg-accent-blue-muted text-accent-blue font-mono text-xs font-semibold tracking-[0.08em]">
+          <span className="inline-flex items-center px-2 py-1 rounded-sm bg-accent-blue-muted text-accent-blue font-mono text-xs font-semibold tracking-[0.08em]">
             {String(number).padStart(2, "0")}
           </span>
           <div className="flex items-center gap-3 mt-3">
@@ -37,12 +37,12 @@ export function ExampleBlock({
               {title}
             </h2>
             {isLive ? (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.20)]">
-                <span className="w-1 h-1 rounded-full bg-[#22C55E] pulse-dot" />
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.20)]">
+                <span className="w-1 h-1 rounded-sm bg-[#22C55E] pulse-dot" />
                 Live
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(245,158,11,0.10)] text-[#F59E0B] border border-[rgba(245,158,11,0.20)]">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(245,158,11,0.10)] text-[#F59E0B] border border-[rgba(245,158,11,0.20)]">
                 Mock
               </span>
             )}
@@ -53,7 +53,7 @@ export function ExampleBlock({
         </div>
 
         {/* 50/50 split container */}
-        <div className="rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="rounded-sm border border-border overflow-hidden shadow-none">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="bg-white p-6 lg:p-8 lg:border-r border-border">
               {left}

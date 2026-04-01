@@ -111,7 +111,7 @@ export function ExperimentBuilder() {
                   key={et.type}
                   onClick={() => setExperimentType(et.type)}
                   className={cn(
-                    "text-left px-3 py-2 rounded-lg border text-xs transition-all",
+                    "text-left px-3 py-2 rounded-sm border text-xs transition-all",
                     experimentType === et.type
                       ? "border-accent-blue bg-accent-blue/[0.04] text-accent-blue font-medium"
                       : "border-border text-muted-foreground hover:border-border hover:bg-muted/30"
@@ -135,7 +135,7 @@ export function ExperimentBuilder() {
                     key={m}
                     onClick={() => setMethod(m)}
                     className={cn(
-                      "px-3 py-1.5 rounded-md border text-xs font-mono uppercase transition-all",
+                      "px-3 py-1.5 rounded-sm border text-xs font-mono uppercase transition-all",
                       method === m
                         ? "border-accent-blue bg-accent-blue/[0.04] text-accent-blue font-medium"
                         : "border-border text-muted-foreground hover:bg-muted/30"
@@ -158,7 +158,7 @@ export function ExperimentBuilder() {
               <select
                 value={targetIdx}
                 onChange={(e) => setTargetIdx(Number(e.target.value))}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                className="w-full h-10 rounded-sm border border-input bg-background px-3 text-sm"
               >
                 {PRESET_TARGETS.map((t, i) => (
                   <option key={t.id} value={i}>
@@ -176,7 +176,7 @@ export function ExperimentBuilder() {
             </label>
 
             {sequences.length === 0 ? (
-              <div className="border border-dashed border-border rounded-lg p-6 text-center space-y-3">
+              <div className="border border-dashed border-border rounded-sm p-6 text-center space-y-3">
                 <p className="text-sm text-muted-foreground">
                   Add protein sequences to test
                 </p>
@@ -215,14 +215,14 @@ export function ExperimentBuilder() {
                     Clear all
                   </button>
                 </div>
-                <div className="border border-border rounded-lg overflow-hidden max-h-[280px] overflow-y-auto">
+                <div className="border border-border rounded-sm overflow-hidden max-h-[280px] overflow-y-auto">
                   <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-border bg-muted/30">
-                        <th className="text-left px-3 py-2 font-medium text-muted-foreground w-24">
+                    <thead className="sticky top-0 z-10">
+                      <tr className="bg-secondary/50 border-b border-border">
+                        <th className="text-left px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground w-24">
                           Name
                         </th>
-                        <th className="text-left px-3 py-2 font-medium text-muted-foreground">
+                        <th className="text-left px-3 py-2 font-semibold text-[10px] tracking-wider uppercase text-muted-foreground">
                           Sequence
                         </th>
                         <th className="w-8" />
@@ -232,7 +232,7 @@ export function ExperimentBuilder() {
                       {sequences.map((seq, i) => (
                         <tr
                           key={i}
-                          className="border-b border-border/50 last:border-0 hover:bg-muted/20"
+                          className="border-b border-border last:border-0 hover:bg-muted/10 transition-none"
                         >
                           <td className="px-3 py-1.5 font-mono text-foreground">
                             <span className="flex items-center gap-1.5">

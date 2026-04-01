@@ -61,7 +61,7 @@ export function ApiPanel({
       <div className="flex items-center gap-1 px-4 h-11 bg-[#1C2027] border-b border-white/[0.15] shrink-0">
         <button
           onClick={() => onTabChange?.("request")}
-          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
+          className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors duration-150 ${
             activeTab === "request"
               ? "bg-[#13161B] text-[#E4E4E7]"
               : "text-[#9CA3B0] hover:text-[#E4E4E7]/70"
@@ -71,7 +71,7 @@ export function ApiPanel({
         </button>
         <button
           onClick={() => !responseDisabled && onTabChange?.("response")}
-          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
+          className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors duration-150 ${
             responseDisabled
               ? "text-[#9CA3B0]/50 cursor-not-allowed"
               : activeTab === "response"
@@ -173,7 +173,7 @@ export function ApiPanel({
           </>
         ) : (
           <div className="p-4 text-xs font-mono text-[#5C6370] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#5C6370]/50" />
+            <span className="w-2 h-2 rounded-sm bg-[#5C6370]/50" />
             Waiting for request...
           </div>
         )}

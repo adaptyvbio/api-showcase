@@ -236,7 +236,7 @@ export function TargetExplorer() {
           {uiError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-sm border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive"
             >
               <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
               <span>{uiError}</span>
@@ -259,7 +259,7 @@ export function TargetExplorer() {
                 />
               ))}
               {targets.length === 0 && isLoading && (
-                <div className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-dashed border-border py-8 text-sm text-muted-foreground">
+                <div className="col-span-2 flex items-center justify-center gap-2 rounded-sm border border-dashed border-border py-8 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Searching targets...
                 </div>
@@ -303,7 +303,7 @@ function TargetCard({
     <button
       onClick={onClick}
       disabled={isPending}
-      className="text-left rounded-lg border border-border hover:border-accent-blue/30 hover:bg-accent-blue/[0.02] transition-all group overflow-hidden disabled:cursor-wait disabled:opacity-70"
+      className="text-left rounded-sm border border-border hover:border-primary hover:bg-primary/5 transition-none group overflow-hidden disabled:cursor-wait disabled:opacity-70"
     >
       {/* 3D structure thumbnail */}
       {target.uniprot_id && (
