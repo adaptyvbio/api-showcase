@@ -166,7 +166,7 @@ export function Hero() {
 
         <div className="mt-10 flex items-center justify-center gap-3">
           <a
-            href="#browse-targets"
+            href="#experiment-types"
             className="h-11 px-6 inline-flex items-center rounded-lg bg-accent-blue text-white text-sm font-semibold hover:bg-accent-blue-hover transition-colors duration-150 tracking-[-0.005em]"
           >
             Explore Examples
