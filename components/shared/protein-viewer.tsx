@@ -221,7 +221,8 @@ export function ProteinViewer({
     const viewer = viewerRef.current;
     if (!viewer || status !== "ready") return;
 
-    viewer.removeAllSurfaces();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (viewer as any).removeAllSurfaces();
     if (showSurface) {
       viewer.addSurface(
         "VDW",

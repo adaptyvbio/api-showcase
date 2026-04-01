@@ -361,7 +361,7 @@ export const DEMO_UPDATES: DemoUpdate[] = buildDemoUpdates(new Date("2026-03-01T
 // ─── Lifecycle Stages (for the create experiment response) ───────────────
 
 const DEMO_EXPERIMENT_NAME = "Anti-HER2 VHH Binding Screen";
-const DEMO_CREATED_AT = addHours(BASE_DATE, 0);
+const DEMO_CREATED_AT = new Date().toISOString();
 const DEMO_EXPERIMENT_URL = `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`;
 const DEMO_DATA_PACKAGE_URL = `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`;
 const DEMO_SEQUENCE_COUNT = DEMO_SEQUENCES.length;
