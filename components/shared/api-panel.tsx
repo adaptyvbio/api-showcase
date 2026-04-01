@@ -136,7 +136,7 @@ export function ApiPanel({
       )}
 
       {/* Content area */}
-      <div className="relative flex-1 min-h-0">
+      <div className="relative flex-1 min-h-0 overflow-hidden">
         {isLoading && activeTab === "response" ? (
           <div className="p-4 space-y-3">
             {[70, 45, 60, 80, 50, 35].map((w, i) => (

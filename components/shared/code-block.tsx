@@ -23,7 +23,7 @@ function renderJson(value: unknown, indent = 0, path = "root"): React.ReactNode[
   if (typeof value === "number")
     return [<span key={`${path}-number`} className="text-[#D19A66]">{String(value)}</span>];
   if (typeof value === "string") {
-    const display = value.length > 120 ? value.slice(0, 117) + "..." : value;
+    const display = value.length > 60 ? value.slice(0, 57) + "…" : value;
     return [
       <span key={`${path}-string`} className="text-[#98C379]">
         &quot;{esc(display)}&quot;
@@ -70,17 +70,17 @@ function renderJson(value: unknown, indent = 0, path = "root"): React.ReactNode[
   return [String(value)];
 }
 
-export function CodeBlock({ data, maxHeight = "400px" }: CodeBlockProps) {
+export function CodeBlock({ data, maxHeight }: CodeBlockProps) {
   const elements = useMemo(() => {
     const nodes = renderJson(data);
     return nodes.map((node, i) => <Fragment key={i}>{node}</Fragment>);
   }, [data]);
 
   return (
-    <div className="relative">
+    <div className="absolute inset-0 overflow-auto code-scroll">
       <pre
-        className="font-mono text-[12px] leading-[1.7] p-4 overflow-auto code-scroll text-[#ABB2BF] select-text"
-        style={{ maxHeight }}
+        className="font-mono text-[12px] leading-[1.7] p-4 text-[#ABB2BF] select-text"
+        style={maxHeight ? { maxHeight } : undefined}
       >
         <code>{elements}</code>
       </pre>
