@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
 const SECTIONS = [
-  { id: "browse-targets", label: "Browse Targets" },
+  { id: "experiment-types", label: "Experiment Types" },
   { id: "create-experiment", label: "Create Experiment" },
-  { id: "get-a-quote", label: "Get a Quote" },
+  { id: "browse-targets", label: "Browse Targets" },
   { id: "track-progress", label: "Track Progress" },
   { id: "view-results", label: "View Results" },
-  { id: "ai-assistant", label: "AI Assistant" },
 ];
 
 export function Nav() {
@@ -75,7 +74,7 @@ export function Nav() {
             rel="noopener noreferrer"
             className="hidden sm:inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium hover:bg-accent-blue-hover transition-colors duration-150"
           >
-            Explore API Docs
+            API Docs
           </a>
 
           <button
@@ -106,7 +105,7 @@ export function Nav() {
               rel="noopener noreferrer"
               className="inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium"
             >
-              Explore API Docs
+              API Docs
             </a>
           </div>
         </div>

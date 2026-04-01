@@ -1,217 +1,395 @@
 import type { ExperimentInfo, AffinityResult } from "./api-types";
 
-export const MOCK_EXPERIMENT_RESPONSE = {
-  experiment_id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-  error: null,
-};
+// ─── Consistent Demo Data Model ───────────────────────────────────────────
+// All sections reference the same experiment for coherence:
+//   Experiment: "Anti-HER2 VHH Binding Screen"
+//   Code: ABS-001-042
+//   Type: screening (BLI)
+//   Target: Canine HER2 / ErbB2 (His Tag)
+//   20 VHH sequences → binding data with KD values
+
+export const DEMO_EXPERIMENT_ID = "019d4a2b-3c5e-7890-abcd-1234567890ab";
+export const DEMO_EXPERIMENT_CODE = "ABS-001-042";
+export const DEMO_TARGET_ID = "019a03da-b87f-7e62-9ba1-7b776b7c8eb3";
+export const DEMO_TARGET_NAME = "Canine HER2 / ErbB2 Protein (His Tag)";
+
+// ─── Experiment Types ─────────────────────────────────────────────────────
+
+export interface ExperimentType {
+  type: string;
+  label: string;
+  description: string;
+  requiresTarget: boolean;
+  methods: string[];
+  dataReturned: string;
+}
+
+export const EXPERIMENT_TYPES: ExperimentType[] = [
+  {
+    type: "expression",
+    label: "Expression",
+    description: "Test whether your protein sequences can be expressed. Get yield and purity data for each construct.",
+    requiresTarget: false,
+    methods: [],
+    dataReturned: "Expression yield, purity (CE-SDS / HPLC-SEC)",
+  },
+  {
+    type: "screening",
+    label: "Binding Screening",
+    description: "Screen your sequences against a target protein. Identify which candidates bind and rank them by binding strength.",
+    requiresTarget: true,
+    methods: ["bli", "spr"],
+    dataReturned: "Binding yes/no, qualitative strength, approximate KD",
+  },
+  {
+    type: "affinity",
+    label: "Affinity Characterization",
+    description: "Measure precise binding kinetics for your best candidates. Get full kinetic curves with KD, kon, and koff values.",
+    requiresTarget: true,
+    methods: ["bli", "spr"],
+    dataReturned: "KD, kon, koff, sensorgrams, curve fits",
+  },
+  {
+    type: "thermostability",
+    label: "Thermostability",
+    description: "Assess thermal stability of your proteins using nanoDSF. Get melting temperature and aggregation onset data.",
+    requiresTarget: false,
+    methods: [],
+    dataReturned: "Tm, Tagg, Tonset, quality score",
+  },
+  {
+    type: "fluorescence",
+    label: "Fluorescence",
+    description: "Measure intrinsic or engineered fluorescence properties. Characterize fluorescent fusion proteins.",
+    requiresTarget: false,
+    methods: [],
+    dataReturned: "Fluorescence intensity, emission spectra",
+  },
+];
+
+// ─── Preset Targets (for dropdowns) ──────────────────────────────────────
 
 export const PRESET_TARGETS = [
   {
     id: "019a03da-b87f-7e62-9ba1-7b776b7c8eb3",
     name: "Canine HER2 / ErbB2 Protein (His Tag)",
     gene: "ERBB2",
+    vendor: "Acro Biosystems",
+    price_cents: 1749,
   },
   {
     id: "019a03da-b87f-7546-9184-8b5637390104",
     name: "Canine BLyS / TNFSF13B / BAFF Protein (Fc Tag)",
     gene: "TNFSF13B",
+    vendor: "Acro Biosystems",
+    price_cents: 1749,
   },
   {
     id: "019a03da-b87f-7b5c-a2ed-eeeef034252d",
     name: "Canine PD-L1 / B7-H1 / CD274 Protein (ECD, Fc Tag)",
     gene: "CD274",
+    vendor: "Sino Biological",
+    price_cents: 1499,
   },
   {
     id: "019a03da-b87f-7dd7-843f-566bbe08b5c7",
-    name: "Cynomolgus IL-6 Protein, His Tag",
+    name: "Cynomolgus IL-6 Protein (His Tag)",
     gene: "IL6",
+    vendor: "Acro Biosystems",
+    price_cents: 1749,
   },
   {
     id: "019a03da-b87f-7cb5-8896-3c6887a2b39f",
     name: "Cynomolgus VEGFR2 / Flk-1 / CD309 Protein (His Tag)",
     gene: "VEGFR2",
+    vendor: "Sino Biological",
+    price_cents: 1499,
   },
 ];
+
+// ─── 20 VHH Sequences ────────────────────────────────────────────────────
+// Realistic nanobody sequences (~120 aa) with varied CDR3 loops.
+// 19 test + 1 control (Trastuzumab-derived scFv fragment)
+
+const VHH_FRAMEWORK_PRE = "EVQLVESGGGLVQPGGSLRLSCAAS";
+const VHH_FRAMEWORK_MID = "WVRQAPGKGLEWVS";
+const VHH_FRAMEWORK_POST = "RFTISRDNSKNTLYLQMNSLRAEDTAVYYCAK";
+const VHH_FRAMEWORK_END = "WGQGTLVTVSS";
+
+function makeVHH(cdr1: string, cdr2: string, cdr3: string): string {
+  return VHH_FRAMEWORK_PRE + cdr1 + VHH_FRAMEWORK_MID + cdr2 + VHH_FRAMEWORK_POST + cdr3 + VHH_FRAMEWORK_END;
+}
+
+export interface DemoSequence {
+  name: string;
+  sequence: string;
+  isControl: boolean;
+}
+
+export const DEMO_SEQUENCES: DemoSequence[] = [
+  { name: "VHH-01", sequence: makeVHH("GFTFSNYAMS", "AISGSGGSTY", "DLRGPTYDSSWYR"), isControl: false },
+  { name: "VHH-02", sequence: makeVHH("GRTFSSYPMH", "YISPSGGFTY", "AGSYWPLERDY"), isControl: false },
+  { name: "VHH-03", sequence: makeVHH("GFTFDDYAIS", "GISWNSGSIG", "RGVRAEDGGYLDY"), isControl: false },
+  { name: "VHH-04", sequence: makeVHH("GFTFSRYWIG", "EINQSGSTNF", "RPLYSNWMEDY"), isControl: false },
+  { name: "VHH-05", sequence: makeVHH("GSIFSINAMI", "HISPDGSETY", "NARSYTTSYPDY"), isControl: false },
+  { name: "VHH-06", sequence: makeVHH("GRTFSLYAMG", "AISGSGGRTF", "DLWYDSSGYRP"), isControl: false },
+  { name: "VHH-07", sequence: makeVHH("GFTFSSYWMS", "RIKSKTDGGT", "TVTTASAYFDY"), isControl: false },
+  { name: "VHH-08", sequence: makeVHH("GFTFSDHAMS", "TISMSGGFSY", "DLPTYWGQSYYR"), isControl: false },
+  { name: "VHH-09", sequence: makeVHH("GFTFRNYAMS", "AISSSGRSTY", "NWQSGFDY"), isControl: false },
+  { name: "VHH-10", sequence: makeVHH("GLTFSNYAMN", "SISVGGSTYY", "RGFPYDSSWYR"), isControl: false },
+  { name: "VHH-11", sequence: makeVHH("GFTFSKYAMS", "GISASGGSTF", "ARWGDDYFDY"), isControl: false },
+  { name: "VHH-12", sequence: makeVHH("GYTFTRYWMH", "NIKPSDSETY", "DPMGYYYGMDV"), isControl: false },
+  { name: "VHH-13", sequence: makeVHH("GFTFSRHWMS", "YINPSGGSTN", "SRGWSSAYFDY"), isControl: false },
+  { name: "VHH-14", sequence: makeVHH("GFTFADYAMS", "GISWSSGSIG", "DGYYESYGMDV"), isControl: false },
+  { name: "VHH-15", sequence: makeVHH("GRTISSYPMH", "YISPAGGFTY", "VRSYWDPLERDY"), isControl: false },
+  { name: "VHH-16", sequence: makeVHH("GFTFSEYAMS", "AISGTGGSTY", "ELPGRYDR"), isControl: false },
+  { name: "VHH-17", sequence: makeVHH("GFTFSPYAMG", "RISRSGGSTF", "GYDWPTYRDY"), isControl: false },
+  { name: "VHH-18", sequence: makeVHH("GFTFSHYWMS", "RIKSSTDGGT", "SSGSYYGMDV"), isControl: false },
+  { name: "VHH-19", sequence: makeVHH("GFTFSSYAMS", "YISPSGGSTY", "DRWGDDYFDY"), isControl: false },
+  {
+    name: "Ctrl-Tras",
+    sequence: "DIQMTQSPSSLSASVGDRVTITCRASQDVNTAVAWYQQKPGKAPKLLIYSASFLYSGVPSRFSGSRSGTDFTLTISSLQPEDFATYYCQQHYTTPPTFGQGTKVEIK",
+    isControl: true,
+  },
+];
+
+// Build a sequences map for API requests
+export function buildSequencesMap(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const s of DEMO_SEQUENCES) {
+    map[s.name] = s.sequence;
+  }
+  return map;
+}
+
+// ─── Binding Results (20 sequences) ──────────────────────────────────────
+// KD values range from ~0.8 nM (strong) to non-binder
+// Control (Ctrl-Tras) at 156 nM
+// Inverted log scale: higher -log10(KD) = better binder
+
+export const DEMO_RESULTS: AffinityResult[] = [
+  // Strong binders (KD < 5 nM)
+  { sequence_id: "seq-01", sequence_name: "VHH-01", kd: 8.1e-10, kon: 2.4e6, koff: 1.9e-3, binding_strength: "strong", r_squared: 0.999 },
+  { sequence_id: "seq-02", sequence_name: "VHH-02", kd: 1.2e-9, kon: 1.8e6, koff: 2.2e-3, binding_strength: "strong", r_squared: 0.998 },
+  { sequence_id: "seq-03", sequence_name: "VHH-03", kd: 2.5e-9, kon: 1.4e6, koff: 3.5e-3, binding_strength: "strong", r_squared: 0.997 },
+  { sequence_id: "seq-04", sequence_name: "VHH-04", kd: 4.7e-9, kon: 9.8e5, koff: 4.6e-3, binding_strength: "strong", r_squared: 0.996 },
+  // Medium binders (5-50 nM)
+  { sequence_id: "seq-05", sequence_name: "VHH-05", kd: 8.3e-9, kon: 6.2e5, koff: 5.1e-3, binding_strength: "medium", r_squared: 0.994 },
+  { sequence_id: "seq-06", sequence_name: "VHH-06", kd: 1.2e-8, kon: 4.5e5, koff: 5.4e-3, binding_strength: "medium", r_squared: 0.993 },
+  { sequence_id: "seq-07", sequence_name: "VHH-07", kd: 1.8e-8, kon: 3.2e5, koff: 5.8e-3, binding_strength: "medium", r_squared: 0.991 },
+  { sequence_id: "seq-08", sequence_name: "VHH-08", kd: 3.5e-8, kon: 2.1e5, koff: 7.4e-3, binding_strength: "medium", r_squared: 0.988 },
+  // Weak binders (50-500 nM)
+  { sequence_id: "seq-09", sequence_name: "VHH-09", kd: 6.7e-8, kon: 1.5e5, koff: 1.0e-2, binding_strength: "weak", r_squared: 0.982 },
+  { sequence_id: "seq-10", sequence_name: "VHH-10", kd: 1.2e-7, kon: 8.4e4, koff: 1.0e-2, binding_strength: "weak", r_squared: 0.978 },
+  // Control (156 nM)
+  { sequence_id: "seq-ctrl", sequence_name: "Ctrl-Tras", kd: 1.56e-7, kon: 7.1e4, koff: 1.1e-2, binding_strength: "weak", r_squared: 0.975 },
+  { sequence_id: "seq-11", sequence_name: "VHH-11", kd: 2.1e-7, kon: 5.2e4, koff: 1.1e-2, binding_strength: "weak", r_squared: 0.971 },
+  { sequence_id: "seq-12", sequence_name: "VHH-12", kd: 4.5e-7, kon: 2.8e4, koff: 1.3e-2, binding_strength: "weak", r_squared: 0.963 },
+  // Very weak / non-binders
+  { sequence_id: "seq-13", sequence_name: "VHH-13", kd: 8.9e-7, kon: 1.2e4, koff: 1.1e-2, binding_strength: "non_binder", r_squared: 0.951 },
+  { sequence_id: "seq-14", sequence_name: "VHH-14", kd: 1.5e-6, kon: 8.1e3, koff: 1.2e-2, binding_strength: "non_binder", r_squared: 0.942 },
+  { sequence_id: "seq-15", sequence_name: "VHH-15", kd: 3.2e-6, kon: 4.5e3, koff: 1.4e-2, binding_strength: "non_binder", r_squared: 0.928 },
+  // No measurable binding
+  { sequence_id: "seq-16", sequence_name: "VHH-16", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
+  { sequence_id: "seq-17", sequence_name: "VHH-17", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
+  { sequence_id: "seq-18", sequence_name: "VHH-18", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
+  // No expression
+  { sequence_id: "seq-19", sequence_name: "VHH-19", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "no_expression" as AffinityResult["binding_strength"], r_squared: null as unknown as number },
+];
+
+// ─── Experiment Updates (auto-animated timeline) ─────────────────────────
+
+export interface DemoUpdate {
+  id: string;
+  experiment_id: string;
+  experiment_code: string;
+  type: string;
+  title: string;
+  content: string;
+  status: string;
+  timestamp: string;
+}
 
 const BASE_DATE = new Date("2026-03-01T10:00:00Z");
 
-function addDays(date: Date, days: number): string {
+function addHours(date: Date, hours: number): string {
   const d = new Date(date);
-  d.setDate(d.getDate() + days);
+  d.setTime(d.getTime() + hours * 3600000);
   return d.toISOString();
 }
 
-export const LIFECYCLE_STAGES: ExperimentInfo[] = [
+export const DEMO_UPDATES: DemoUpdate[] = [
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-01",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "status_change",
+    title: "Experiment created",
+    content: "Your experiment ABS-001-042 has been created with 20 sequences targeting HER2.",
     status: "draft",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "none",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "estimate",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 0),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-02",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "quote",
+    title: "Quote sent — $2,849.00",
+    content: "A quote for 20 sequences × $99/seq + $869 materials has been sent for your approval.",
     status: "waiting_for_confirmation",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "none",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "estimate",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 1),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-03",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "status_change",
+    title: "Quote accepted",
+    content: "You've confirmed the experiment. We're ordering target materials now.",
     status: "waiting_for_materials",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "none",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "confirmed",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 3),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-04",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "status_change",
+    title: "Materials received",
+    content: "HER2 target protein received. Starting gene synthesis for your 20 VHH sequences.",
     status: "in_production",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "none",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "confirmed",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 72),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-05",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "lab_update",
+    title: "Gene synthesis complete",
+    content: "All 20 DNA constructs synthesized successfully. Moving to expression.",
+    status: "in_production",
+    timestamp: addHours(BASE_DATE, 168),
+  },
+  {
+    id: "upd-06",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "lab_update",
+    title: "Expression & purification complete",
+    content: "19 of 20 sequences expressed. VHH-19 showed no detectable expression. Proceeding with 19 candidates + 1 control.",
+    status: "in_production",
+    timestamp: addHours(BASE_DATE, 336),
+  },
+  {
+    id: "upd-07",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "status_change",
+    title: "BLI measurement in progress",
+    content: "Running binding kinetics on the Gator BLI instrument. Estimated completion: 4 hours.",
     status: "data_analysis",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "processing",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "confirmed",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 360),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-08",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "status_change",
+    title: "Data analysis complete",
+    content: "Kinetic fits processed. 4 strong binders identified (KD < 5 nM). Results under review.",
     status: "in_review",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "available",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "confirmed",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 384),
   },
   {
-    id: "019d4a2b-3c5e-7890-abcd-1234567890ab",
-    name: "Anti-HER2 Affinity Screen",
-    code: "ABS-001-042",
+    id: "upd-09",
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    type: "results",
+    title: "Results published",
+    content: "Your binding data is ready. 4 strong binders, 4 medium, 4 weak, 7 non-binders, 1 no expression. Data package available for download.",
     status: "done",
-    experiment_spec: {
-      experiment_type: "affinity",
-      target_id: "her2-uuid",
-      sequences: { "VHH-A1": "EVQLVESGGGLVQPGG..." },
-      n_replicates: 2,
-    },
-    created_at: addDays(BASE_DATE, 0),
-    results_status: "available",
-    experiment_url: "https://foundry.adaptyvbio.com/organization/abs/experiment/019d4a2b",
-    costs: {
-      type: "final",
-      breakdown: {
-        pricing_version: "v1_2026-01-20",
-        assay: { experiment_type: "affinity", subtotal_cents: 39800 },
-        total_cents: 43298,
-      },
-    },
+    timestamp: addHours(BASE_DATE, 408),
   },
 ];
 
-export const MOCK_RESULTS: AffinityResult[] = [
-  { sequence_id: "seq-1", sequence_name: "VHH-A1", kd: 2.3e-10, kon: 1.8e6, koff: 4.1e-4, binding_strength: "strong", r_squared: 0.998 },
-  { sequence_id: "seq-2", sequence_name: "VHH-B2", kd: 8.1e-9, kon: 5.2e5, koff: 4.2e-3, binding_strength: "medium", r_squared: 0.995 },
-  { sequence_id: "seq-3", sequence_name: "VHH-C3", kd: 1.5e-7, kon: 2.1e4, koff: 3.2e-3, binding_strength: "weak", r_squared: 0.982 },
-  { sequence_id: "seq-4", sequence_name: "VHH-D4", kd: 4.7e-10, kon: 1.2e6, koff: 5.6e-4, binding_strength: "strong", r_squared: 0.997 },
-  { sequence_id: "seq-5", sequence_name: "VHH-E5", kd: 3.2e-8, kon: 8.4e4, koff: 2.7e-3, binding_strength: "medium", r_squared: 0.991 },
-  { sequence_id: "seq-6", sequence_name: "VHH-F6", kd: 9.8e-6, kon: 1.1e3, koff: 1.1e-2, binding_strength: "non_binder", r_squared: 0.943 },
-  { sequence_id: "seq-7", sequence_name: "VHH-G7", kd: 6.4e-11, kon: 3.5e6, koff: 2.2e-4, binding_strength: "strong", r_squared: 0.999 },
-  { sequence_id: "seq-8", sequence_name: "VHH-H8", kd: 2.1e-7, kon: 1.9e4, koff: 4.0e-3, binding_strength: "weak", r_squared: 0.978 },
-];
+// ─── Lifecycle Stages (for the create experiment response) ───────────────
+
+export const MOCK_CREATE_RESPONSE = {
+  id: DEMO_EXPERIMENT_ID,
+  code: DEMO_EXPERIMENT_CODE,
+  name: "Anti-HER2 VHH Binding Screen",
+  status: "draft",
+  experiment_spec: {
+    experiment_type: "screening",
+    method: "bli",
+    target_id: DEMO_TARGET_ID,
+    sequences: buildSequencesMap(),
+    n_replicates: 1,
+  },
+  created_at: addHours(BASE_DATE, 0),
+  experiment_url: `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`,
+  costs: {
+    type: "estimate",
+    breakdown: {
+      pricing_version: "v1_2026-01-20",
+      assay: {
+        experiment_type: "screening",
+        sequence_count: 20,
+        n_replicates: 1,
+        unit_price_cents: 9900,
+        subtotal_cents: 198000,
+      },
+      materials: {
+        target_id: DEMO_TARGET_ID,
+        target_name: DEMO_TARGET_NAME,
+        sequence_count: 20,
+        price_per_sequence_cents: 1749,
+        subtotal_cents: 34980,
+      },
+      total_cents: 232980,
+    },
+  },
+};
+
+// Full experiment response (for results section)
+export const MOCK_EXPERIMENT_FULL = {
+  id: DEMO_EXPERIMENT_ID,
+  code: DEMO_EXPERIMENT_CODE,
+  name: "Anti-HER2 VHH Binding Screen",
+  status: "done",
+  experiment_spec: {
+    experiment_type: "screening",
+    method: "bli",
+    target_id: DEMO_TARGET_ID,
+    sequences: buildSequencesMap(),
+    n_replicates: 1,
+  },
+  created_at: addHours(BASE_DATE, 0),
+  results_status: "available",
+  experiment_url: `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`,
+  data_package_url: `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`,
+};
+
+// Mock results API response
+export const MOCK_RESULTS_RESPONSE = {
+  items: DEMO_RESULTS.map((r) => ({
+    id: r.sequence_id,
+    sequence_id: r.sequence_id,
+    sequence_name: r.sequence_name,
+    target_id: DEMO_TARGET_ID,
+    target_name: DEMO_TARGET_NAME,
+    experiment_id: DEMO_EXPERIMENT_ID,
+    experiment_code: DEMO_EXPERIMENT_CODE,
+    kd: r.kd,
+    kd_units: "M",
+    kon: r.kon,
+    koff: r.koff,
+    binding_strength: r.binding_strength,
+    r_squared: r.r_squared,
+    n_replicates: 1,
+    is_control: r.sequence_name === "Ctrl-Tras",
+  })),
+  total: 20,
+  count: 20,
+  offset: 0,
+  data_package_url: `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`,
+};

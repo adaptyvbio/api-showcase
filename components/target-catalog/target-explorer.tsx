@@ -69,7 +69,7 @@ export function TargetExplorer() {
   return (
     <ExampleBlock
       id="browse-targets"
-      number={1}
+      number={3}
       title="Browse Target Proteins"
       description="Help your users find the right protein target to test against."
       isLive

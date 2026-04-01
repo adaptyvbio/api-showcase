@@ -74,14 +74,15 @@ export interface ExperimentInfo {
     experiment_type: string;
     target_id: string | null;
     sequences: Record<string, string>;
+    method?: string;
     n_replicates?: number;
     antigen_concentrations?: number[];
     parameters?: Record<string, unknown>;
   };
   created_at: string;
-  results_status: string;
+  results_status?: string;
   experiment_url: string;
-  costs: {
+  costs?: {
     type: string;
     breakdown: {
       pricing_version: string;
@@ -94,17 +95,20 @@ export interface ExperimentInfo {
 export interface AffinityResult {
   sequence_id: string;
   sequence_name: string;
-  kd: number;
-  kon: number;
-  koff: number;
-  binding_strength: "strong" | "medium" | "weak" | "non_binder";
-  r_squared: number;
+  kd: number | null;
+  kon: number | null;
+  koff: number | null;
+  binding_strength: "strong" | "medium" | "weak" | "non_binder" | "no_expression";
+  r_squared: number | null;
 }
 
 export interface UpdateItem {
   id: string;
   experiment_id: string;
   experiment_code: string;
-  name: string;
+  type: string;
+  title: string;
+  content: string;
+  status: string;
   timestamp: string;
 }
