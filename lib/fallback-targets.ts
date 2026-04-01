@@ -1,146 +1,161 @@
 import type { Target, TargetDetail } from "./api-types";
 
+// ─── Protein-centric fallback data ──────────────────────────────────────────
+// 6 human target proteins commonly used in antibody discovery.
+// Each protein is the biological entity (identified by UniProt);
+// products (commercial reagents) are a sub-detail.
+
 export const FALLBACK_TARGETS: Target[] = [
   {
-    id: "019a03da-b87f-7e62-9ba1-7b776b7c8eb3",
-    name: "Canine HER2 / ErbB2 Protein (His Tag)",
-    vendor_name: "Acro Biosystems",
-    catalog_number: "HE2-C52H3",
-    url: "https://targets.adaptyvbio.com/product/acro/HE2-C52H3",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1749 },
+    id: "comp-egfr-human",
+    name: "EGFR",
+    gene_names: ["EGFR", "ERBB1", "HER1"],
+    organism: "Human",
+    uniprot_id: "P00533",
+    family: "ErbB receptor tyrosine kinase",
+    url: "https://targets.adaptyvbio.com/protein/0a7ed4af-egfr",
+  },
+  {
+    id: "comp-her2-human",
+    name: "HER2 / ERBB2",
+    gene_names: ["ERBB2", "HER2", "NEU"],
+    organism: "Human",
     uniprot_id: "P04626",
+    family: "ErbB receptor tyrosine kinase",
+    url: "https://targets.adaptyvbio.com/protein/e9cb07ba-her2",
   },
   {
-    id: "019a03da-b87f-7546-9184-8b5637390104",
-    name: "Canine BLyS / TNFSF13B / BAFF Protein (Fc Tag)",
-    vendor_name: "Acro Biosystems",
-    catalog_number: "BAF-C5259",
-    url: "https://targets.adaptyvbio.com/product/acro/BAF-C5259",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1749 },
-    uniprot_id: "Q9Y275",
+    id: "comp-il7r-human",
+    name: "IL-7Rα / CD127",
+    gene_names: ["IL7R", "IL7RA", "CD127"],
+    organism: "Human",
+    uniprot_id: "P16871",
+    family: "Type I cytokine receptor",
+    url: "https://targets.adaptyvbio.com/protein/79fbe63f-il7r",
   },
   {
-    id: "019a03da-b87f-7b5c-a2ed-eeeef034252d",
-    name: "Canine PD-L1 / B7-H1 / CD274 Protein (ECD, Fc Tag)",
-    vendor_name: "Sino Biological",
-    catalog_number: "10084-H02H",
-    url: "https://targets.adaptyvbio.com/product/sino/10084-H02H",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1499 },
+    id: "comp-pdl1-human",
+    name: "PD-L1 / CD274",
+    gene_names: ["CD274", "PD-L1", "B7-H1"],
+    organism: "Human",
     uniprot_id: "Q9NZQ7",
+    family: "B7 / CD28 superfamily",
+    url: "https://targets.adaptyvbio.com/protein/0aa3b309-pdl1",
   },
   {
-    id: "019a03da-b87f-7dd7-843f-566bbe08b5c7",
-    name: "Cynomolgus IL-6 Protein (His Tag)",
-    vendor_name: "Acro Biosystems",
-    catalog_number: "IL6-C52H8",
-    url: "https://targets.adaptyvbio.com/product/acro/IL6-C52H8",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1749 },
-    uniprot_id: "P05231",
-  },
-  {
-    id: "019a03da-b87f-7cb5-8896-3c6887a2b39f",
-    name: "Cynomolgus VEGFR2 / Flk-1 / CD309 Protein (His Tag)",
-    vendor_name: "Sino Biological",
-    catalog_number: "10012-H08H",
-    url: "https://targets.adaptyvbio.com/product/sino/10012-H08H",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1499 },
-    uniprot_id: "P35968",
-  },
-  {
-    id: "019a03da-b87f-7a91-b432-1234567890ab",
-    name: "Human TNF-alpha Protein (His Tag)",
-    vendor_name: "Acro Biosystems",
-    catalog_number: "TNA-H5228",
-    url: "https://targets.adaptyvbio.com/product/acro/TNA-H5228",
-    pricing: { type: "per_sequence", price_per_sequence_cents: 1749 },
+    id: "comp-tnf-human",
+    name: "TNF-α",
+    gene_names: ["TNF", "TNFA"],
+    organism: "Human",
     uniprot_id: "P01375",
+    family: "TNF superfamily",
+    url: "https://targets.adaptyvbio.com/protein/6b3c7f73-tnf",
+  },
+  {
+    id: "comp-vegfa-human",
+    name: "VEGF-A",
+    gene_names: ["VEGFA", "VEGF", "VPF"],
+    organism: "Human",
+    uniprot_id: "P15692",
+    family: "PDGF/VEGF growth factor",
+    url: "https://targets.adaptyvbio.com/protein/c8dd6dbd-vegfa",
   },
 ];
 
-const DETAILS_BY_INDEX: Array<{
-  gene_names: string[];
-  organism: string;
-  expression_system: string;
-  sequence_length: number;
-  family: string;
+interface FallbackProduct {
+  vendor: string;
+  catalog_number: string;
   tags: string[];
+  expression_system: string;
+}
+
+interface FallbackDetailData {
+  sequence_length: number;
   molecular_weight: string;
+  subcellular_locations: string[];
   description: string;
-}> = [
-  {
-    gene_names: ["ERBB2", "HER2", "NEU"],
-    organism: "Canis lupus familiaris",
-    expression_system: "HEK293",
-    sequence_length: 630,
-    family: "ErbB receptor tyrosine kinase",
-    tags: ["His Tag", "Recombinant"],
-    molecular_weight: "70.2 kDa",
-    description: "Recombinant Canine HER2/ErbB2 protein with C-terminal His tag, expressed in HEK293 cells. Suitable for BLI and SPR binding assays.",
+  products: FallbackProduct[];
+}
+
+const DETAILS_BY_ID: Record<string, FallbackDetailData> = {
+  "comp-egfr-human": {
+    sequence_length: 1210,
+    molecular_weight: "134 kDa",
+    subcellular_locations: ["Cell membrane"],
+    description: "Receptor tyrosine kinase that binds EGF family ligands. Key oncology target overexpressed in many solid tumors. Binding domain (extracellular domain III) is the primary epitope for therapeutic antibodies like cetuximab.",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "EGR-H5222", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Sino Biological", catalog_number: "10001-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+    ],
   },
-  {
-    gene_names: ["TNFSF13B", "BAFF", "BLyS"],
-    organism: "Canis lupus familiaris",
-    expression_system: "HEK293",
-    sequence_length: 285,
-    family: "TNF superfamily",
-    tags: ["Fc Tag", "Recombinant"],
-    molecular_weight: "52.3 kDa",
-    description: "Recombinant Canine BLyS/BAFF protein with C-terminal human Fc tag. B-cell activating factor involved in B-cell maturation and survival.",
+  "comp-her2-human": {
+    sequence_length: 1255,
+    molecular_weight: "138 kDa",
+    subcellular_locations: ["Cell membrane"],
+    description: "Receptor tyrosine kinase with no known ligand that heterodimerizes with other ErbB family members. Overexpressed in ~20% of breast cancers. Target of trastuzumab (Herceptin) and pertuzumab.",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "HE2-H5225", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Sino Biological", catalog_number: "10004-H08H", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+    ],
   },
-  {
-    gene_names: ["CD274", "PD-L1", "B7-H1"],
-    organism: "Canis lupus familiaris",
-    expression_system: "HEK293",
-    sequence_length: 238,
-    family: "B7 / CD28 superfamily",
-    tags: ["Fc Tag", "ECD", "Recombinant"],
-    molecular_weight: "50.1 kDa",
-    description: "Recombinant Canine PD-L1 extracellular domain with C-terminal Fc tag. Key immune checkpoint ligand for PD-1 receptor.",
+  "comp-il7r-human": {
+    sequence_length: 459,
+    molecular_weight: "50.5 kDa",
+    subcellular_locations: ["Cell membrane"],
+    description: "Alpha chain of the interleukin-7 receptor. Critical for T-cell and B-cell development. Gain-of-function mutations implicated in T-cell acute lymphoblastic leukemia (T-ALL).",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "IL7-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+    ],
   },
-  {
-    gene_names: ["IL6"],
-    organism: "Macaca fascicularis",
-    expression_system: "HEK293",
-    sequence_length: 187,
-    family: "Interleukin-6 family",
-    tags: ["His Tag", "Recombinant"],
-    molecular_weight: "21.0 kDa",
-    description: "Recombinant Cynomolgus IL-6 with C-terminal His tag. Pro-inflammatory cytokine involved in immune regulation and acute-phase response.",
+  "comp-pdl1-human": {
+    sequence_length: 290,
+    molecular_weight: "33.3 kDa",
+    subcellular_locations: ["Cell membrane"],
+    description: "Immune checkpoint ligand that binds PD-1 receptor on T cells to suppress anti-tumor immunity. Target of atezolizumab, durvalumab, and avelumab. One of the most important immuno-oncology targets.",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "PD1-H5229", tags: ["His Tag", "ECD"], expression_system: "HEK293" },
+      { vendor: "Biotechne", catalog_number: "9049-B7", tags: ["Fc Tag", "ECD"], expression_system: "CHO" },
+    ],
   },
-  {
-    gene_names: ["KDR", "VEGFR2", "FLK1"],
-    organism: "Macaca fascicularis",
-    expression_system: "HEK293",
-    sequence_length: 764,
-    family: "VEGF receptor tyrosine kinase",
-    tags: ["His Tag", "Recombinant"],
-    molecular_weight: "85.4 kDa",
-    description: "Recombinant Cynomolgus VEGFR2 extracellular domain with C-terminal His tag. Primary receptor for VEGF-mediated angiogenesis signaling.",
-  },
-  {
-    gene_names: ["TNF", "TNFA"],
-    organism: "Homo sapiens",
-    expression_system: "E. coli",
-    sequence_length: 157,
-    family: "TNF superfamily",
-    tags: ["His Tag", "Recombinant"],
+  "comp-tnf-human": {
+    sequence_length: 233,
     molecular_weight: "17.4 kDa",
-    description: "Recombinant Human TNF-alpha with C-terminal His tag. Key pro-inflammatory cytokine involved in systemic inflammation.",
+    subcellular_locations: ["Secreted", "Cell membrane"],
+    description: "Pro-inflammatory cytokine that mediates systemic inflammation. Exists as a homotrimer. Target of adalimumab (Humira), infliximab (Remicade), and etanercept. One of the best-selling drug target classes globally.",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "TNA-H5228", tags: ["His Tag"], expression_system: "E. coli" },
+      { vendor: "Sino Biological", catalog_number: "10602-HNAE", tags: ["His Tag"], expression_system: "E. coli" },
+    ],
   },
-];
+  "comp-vegfa-human": {
+    sequence_length: 412,
+    molecular_weight: "46.5 kDa (homodimer)",
+    subcellular_locations: ["Secreted"],
+    description: "Vascular endothelial growth factor that drives angiogenesis. Key target in oncology (bevacizumab/Avastin) and ophthalmology (ranibizumab, aflibercept). Functions as disulfide-linked homodimer.",
+    products: [
+      { vendor: "Acro Biosystems", catalog_number: "VE5-H4210", tags: ["His Tag"], expression_system: "HEK293" },
+      { vendor: "Biotechne", catalog_number: "293-VE", tags: ["Carrier-free"], expression_system: "CHO" },
+    ],
+  },
+};
 
 const FALLBACK_TARGET_DETAILS: Record<string, TargetDetail> = Object.fromEntries(
-  FALLBACK_TARGETS.map((t, i) => [
-    t.id,
-    {
-      ...t,
-      details: {
-        ...DETAILS_BY_INDEX[i],
-        sequence: "...",
-        subcellular_locations: ["Cell membrane"],
+  FALLBACK_TARGETS.map((t) => {
+    const detail = DETAILS_BY_ID[t.id];
+    return [
+      t.id,
+      {
+        ...t,
+        details: {
+          sequence_length: detail.sequence_length,
+          molecular_weight: detail.molecular_weight,
+          subcellular_locations: detail.subcellular_locations,
+          description: detail.description,
+          products: detail.products,
+        },
       },
-    },
-  ])
+    ];
+  })
 );
 
 export function filterFallbackTargets(search: string) {
@@ -152,8 +167,9 @@ export function filterFallbackTargets(search: string) {
   return FALLBACK_TARGETS.filter(
     (target) =>
       target.name.toLowerCase().includes(query) ||
-      target.vendor_name.toLowerCase().includes(query) ||
-      target.catalog_number.toLowerCase().includes(query)
+      target.gene_names.some((g) => g.toLowerCase().includes(query)) ||
+      target.organism.toLowerCase().includes(query) ||
+      target.family.toLowerCase().includes(query)
   );
 }
 

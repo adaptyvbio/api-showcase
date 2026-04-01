@@ -315,19 +315,22 @@ function TargetCard({
         />
       )}
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2 group-hover:text-accent-blue transition-colors">
+        <div className="flex items-start justify-between gap-2 mb-1.5">
+          <h3 className="text-sm font-medium text-foreground leading-tight group-hover:text-accent-blue transition-colors">
             {target.name}
           </h3>
           {isPending && (
             <Loader2 className="h-4 w-4 shrink-0 animate-spin text-accent-blue" />
           )}
         </div>
-        {cleanId && (
-          <Badge variant="outline" className="text-[10px] font-mono">
-            {cleanId}
-          </Badge>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {cleanId && (
+            <Badge variant="outline" className="text-[10px] font-mono">
+              {cleanId}
+            </Badge>
+          )}
+          <span className="text-[10px] text-muted-foreground">{target.organism}</span>
+        </div>
       </div>
     </button>
   );
@@ -362,9 +365,7 @@ function TargetDetailView({
 
       <div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          {target.details?.gene_names?.length > 0
-            ? target.details.gene_names.join(" / ")
-            : target.name}
+          {target.name}
         </h3>
         <div className="flex items-center gap-2 mb-3">
           {cleanId && (
@@ -372,55 +373,60 @@ function TargetDetailView({
               UniProt: {cleanId}
             </Badge>
           )}
-          {target.details && (
-            <span className="text-[11px] text-muted-foreground">
-              {target.details.organism}
-            </span>
-          )}
+          <span className="text-[11px] text-muted-foreground">
+            {target.organism}
+          </span>
         </div>
       </div>
 
       {target.details && (
         <div className="space-y-3 text-sm">
           <div className="grid grid-cols-2 gap-2">
+            <Detail label="Family" value={target.family} />
             <Detail label="MW" value={target.details.molecular_weight} />
             <Detail label="Length" value={`${target.details.sequence_length} aa`} />
-            {target.details.expression_system && (
-              <Detail label="Expression" value={target.details.expression_system} />
-            )}
-            {target.details.family && (
-              <Detail label="Family" value={target.details.family} />
+            {target.details.subcellular_locations?.length > 0 && (
+              <Detail label="Location" value={target.details.subcellular_locations.join(", ")} />
             )}
           </div>
-          {target.details.tags?.length > 0 && (
+          {target.gene_names?.length > 1 && (
             <div className="flex gap-1 flex-wrap">
-              {target.details.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="text-[10px]">
-                  {tag}
+              {target.gene_names.map((g) => (
+                <Badge key={g} variant="outline" className="text-[10px] font-mono">
+                  {g}
                 </Badge>
               ))}
             </div>
           )}
           {target.details.description && (
-            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {target.details.description}
             </p>
           )}
 
-          {/* Product info */}
-          <div className="pt-2 border-t border-border/50">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Available from
-            </span>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary" className="text-[10px] font-mono">
-                {target.vendor_name}
-              </Badge>
-              <span className="text-xs font-mono text-muted-foreground">
-                {target.catalog_number}
+          {/* Available products */}
+          {target.details.products?.length > 0 && (
+            <div className="pt-2 border-t border-border/50">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Available products
               </span>
+              <div className="mt-1.5 space-y-1.5">
+                {target.details.products.map((p) => (
+                  <div key={p.catalog_number} className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-[10px] font-mono shrink-0">
+                      {p.vendor}
+                    </Badge>
+                    <span className="text-[11px] font-mono text-muted-foreground">
+                      {p.catalog_number}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground/60">
+                      {p.tags.join(", ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <a

@@ -15,8 +15,8 @@ import type {
 
 export const DEMO_EXPERIMENT_ID = "019d4a2b-3c5e-7890-abcd-1234567890ab";
 export const DEMO_EXPERIMENT_CODE = "ABS-001-042";
-export const DEMO_TARGET_ID = "019a03da-b87f-7e62-9ba1-7b776b7c8eb3";
-export const DEMO_TARGET_NAME = "Canine HER2 / ErbB2 Protein (His Tag)";
+export const DEMO_TARGET_ID = "comp-her2-human";
+export const DEMO_TARGET_NAME = "HER2 / ERBB2";
 
 // ─── Experiment Types ─────────────────────────────────────────────────────
 
@@ -75,41 +75,12 @@ export const EXPERIMENT_TYPES: ExperimentType[] = [
 // ─── Preset Targets (for dropdowns) ──────────────────────────────────────
 
 export const PRESET_TARGETS = [
-  {
-    id: "019a03da-b87f-7e62-9ba1-7b776b7c8eb3",
-    name: "Canine HER2 / ErbB2 Protein (His Tag)",
-    gene: "ERBB2",
-    vendor: "Acro Biosystems",
-    price_cents: 1749,
-  },
-  {
-    id: "019a03da-b87f-7546-9184-8b5637390104",
-    name: "Canine BLyS / TNFSF13B / BAFF Protein (Fc Tag)",
-    gene: "TNFSF13B",
-    vendor: "Acro Biosystems",
-    price_cents: 1749,
-  },
-  {
-    id: "019a03da-b87f-7b5c-a2ed-eeeef034252d",
-    name: "Canine PD-L1 / B7-H1 / CD274 Protein (ECD, Fc Tag)",
-    gene: "CD274",
-    vendor: "Sino Biological",
-    price_cents: 1499,
-  },
-  {
-    id: "019a03da-b87f-7dd7-843f-566bbe08b5c7",
-    name: "Cynomolgus IL-6 Protein (His Tag)",
-    gene: "IL6",
-    vendor: "Acro Biosystems",
-    price_cents: 1749,
-  },
-  {
-    id: "019a03da-b87f-7cb5-8896-3c6887a2b39f",
-    name: "Cynomolgus VEGFR2 / Flk-1 / CD309 Protein (His Tag)",
-    gene: "VEGFR2",
-    vendor: "Sino Biological",
-    price_cents: 1499,
-  },
+  { id: "comp-her2-human", name: "HER2 / ERBB2", gene: "ERBB2" },
+  { id: "comp-egfr-human", name: "EGFR", gene: "EGFR" },
+  { id: "comp-pdl1-human", name: "PD-L1 / CD274", gene: "CD274" },
+  { id: "comp-tnf-human", name: "TNF-α", gene: "TNF" },
+  { id: "comp-vegfa-human", name: "VEGF-A", gene: "VEGFA" },
+  { id: "comp-il7r-human", name: "IL-7Rα / CD127", gene: "IL7R" },
 ];
 
 // ─── 20 VHH Sequences ────────────────────────────────────────────────────

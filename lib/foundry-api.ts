@@ -11,28 +11,25 @@ const foundryEnvSchema = z.object({
 export const targetSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
-  vendor_name: z.string().min(1),
-  catalog_number: z.string().min(1),
-  url: z.string().min(1),
-  pricing: z.object({
-    type: z.string().min(1),
-    price_per_sequence_cents: z.number().int().nonnegative(),
-  }),
+  gene_names: z.array(z.string()),
+  organism: z.string().min(1),
   uniprot_id: z.string().min(1),
+  family: z.string().min(1),
+  url: z.string().min(1),
 });
 
 export const targetDetailSchema = targetSchema.extend({
   details: z.object({
-    gene_names: z.array(z.string()),
-    organism: z.string().min(1),
-    expression_system: z.string().min(1),
-    sequence: z.string().min(1),
     sequence_length: z.number().int().nonnegative(),
-    family: z.string().min(1),
-    subcellular_locations: z.array(z.string()),
-    tags: z.array(z.string()),
     molecular_weight: z.string().min(1),
+    subcellular_locations: z.array(z.string()),
     description: z.string().min(1),
+    products: z.array(z.object({
+      vendor: z.string().min(1),
+      catalog_number: z.string().min(1),
+      tags: z.array(z.string()),
+      expression_system: z.string().min(1),
+    })),
   }),
 });
 

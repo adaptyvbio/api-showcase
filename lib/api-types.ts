@@ -1,28 +1,27 @@
 export interface Target {
   id: string;
   name: string;
-  vendor_name: string;
-  catalog_number: string;
-  url: string;
-  pricing: {
-    type: string;
-    price_per_sequence_cents: number;
-  };
+  gene_names: string[];
+  organism: string;
   uniprot_id: string;
+  family: string;
+  url: string;
+}
+
+export interface TargetProduct {
+  vendor: string;
+  catalog_number: string;
+  tags: string[];
+  expression_system: string;
 }
 
 export interface TargetDetail extends Target {
   details: {
-    gene_names: string[];
-    organism: string;
-    expression_system: string;
-    sequence: string;
     sequence_length: number;
-    family: string;
-    subcellular_locations: string[];
-    tags: string[];
     molecular_weight: string;
+    subcellular_locations: string[];
     description: string;
+    products: TargetProduct[];
   };
 }
 
