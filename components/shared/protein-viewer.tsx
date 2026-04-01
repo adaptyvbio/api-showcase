@@ -97,6 +97,7 @@ export function ProteinViewer({
   );
   const [structureSource, setStructureSource] = useState<string>("");
   const [isVisible, setIsVisible] = useState(size === "lg");
+  const [showSurface, setShowSurface] = useState(true);
 
   const height = size === "sm" ? 140 : 360;
 
@@ -215,6 +216,23 @@ export function ProteinViewer({
     };
   }, [isVisible, size, uniprotId]);
 
+  // Toggle molecular surface
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer || status !== "ready") return;
+
+    viewer.removeAllSurfaces();
+    if (showSurface) {
+      viewer.addSurface(
+        "VDW",
+        { opacity: 0.12, color: "#3b82f6" },
+        {},
+        {}
+      );
+    }
+    viewer.render();
+  }, [showSurface, status]);
+
   // Handle mouse interaction for large viewers
   useEffect(() => {
     if (size !== "lg" || !viewerRef.current) return;
@@ -323,6 +341,22 @@ export function ProteinViewer({
           <div className="text-[10px] font-mono text-muted-foreground">
             No structure
           </div>
+        </div>
+      )}
+
+      {/* Controls (large viewer only) */}
+      {size === "lg" && status === "ready" && (
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-2">
+          <button
+            onClick={() => setShowSurface((s) => !s)}
+            className={`px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+              showSurface
+                ? "bg-accent-blue/15 text-accent-blue"
+                : "bg-black/5 text-muted-foreground"
+            }`}
+          >
+            Surface
+          </button>
         </div>
       )}
 
