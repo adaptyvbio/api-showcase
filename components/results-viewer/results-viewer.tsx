@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -23,14 +23,6 @@ import {
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
 
-const BINDING_COLORS: Record<string, string> = {
-  strong: "bg-binding-strong",
-  medium: "bg-binding-medium",
-  weak: "bg-binding-weak",
-  non_binder: "bg-binding-non",
-  no_expression: "bg-muted-foreground/30",
-};
-
 const BINDING_TEXT_COLORS: Record<string, string> = {
   strong: "text-binding-strong",
   medium: "text-binding-medium",
@@ -39,11 +31,22 @@ const BINDING_TEXT_COLORS: Record<string, string> = {
   no_expression: "text-muted-foreground",
 };
 
-function getBarHeight(kd: number | null): number {
+// Y-axis ticks: KD orders of magnitude (10^-6 to 10^-10)
+const Y_AXIS_TICKS = [
+  { label: "10⁻¹⁰", logKd: 10 },
+  { label: "10⁻⁹", logKd: 9 },
+  { label: "10⁻⁸", logKd: 8 },
+  { label: "10⁻⁷", logKd: 7 },
+  { label: "10⁻⁶", logKd: 6 },
+];
+
+const LOG_KD_MIN = 5.5; // bottom of chart
+const LOG_KD_MAX = 10.5; // top of chart
+
+function getBarPercent(kd: number | null): number {
   if (kd === null || kd === 0) return 0;
-  // -log10(KD): higher = better binder
   const logKd = -Math.log10(kd);
-  return Math.max(4, Math.min(100, ((logKd - 4) / 6.5) * 100));
+  return Math.max(0, Math.min(100, ((logKd - LOG_KD_MIN) / (LOG_KD_MAX - LOG_KD_MIN)) * 100));
 }
 
 type SortKey = "name" | "kd" | "binding_strength";
@@ -121,11 +124,17 @@ export function ResultsViewer() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("kd");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const chartRef = useRef<HTMLDivElement>(null);
 
-  // Always sorted by KD for chart (best binders left), user-sortable for table
+  // All results sorted by KD (best first), null KDs at the end
   const chartSorted = useMemo(() => {
-    const arr = [...DEMO_RESULTS].filter((r) => r.kd != null);
-    arr.sort((a, b) => a.kd! - b.kd!);
+    const arr = [...DEMO_RESULTS];
+    arr.sort((a, b) => {
+      if (a.kd === null && b.kd === null) return 0;
+      if (a.kd === null) return 1;
+      if (b.kd === null) return -1;
+      return a.kd - b.kd;
+    });
     return arr;
   }, []);
 
@@ -157,14 +166,6 @@ export function ResultsViewer() {
     }
   };
 
-  const stats = useMemo(() => ({
-    strong: DEMO_RESULTS.filter((r) => r.binding_strength === "strong").length,
-    medium: DEMO_RESULTS.filter((r) => r.binding_strength === "medium").length,
-    weak: DEMO_RESULTS.filter((r) => r.binding_strength === "weak").length,
-    nonBinder: DEMO_RESULTS.filter((r) => r.binding_strength === "non_binder").length,
-    noExpression: DEMO_RESULTS.filter((r) => r.binding_strength === "no_expression").length,
-  }), []);
-
   return (
     <ExampleBlock
       id="view-results"
@@ -173,24 +174,6 @@ export function ResultsViewer() {
       description="Retrieve binding data programmatically. 20 VHH sequences screened against HER2 with full kinetic data."
       left={
         <div className="space-y-4">
-          {/* Stats summary */}
-          <div className="grid grid-cols-5 gap-2">
-            {[
-              { label: "Strong", count: stats.strong, color: "text-binding-strong" },
-              { label: "Medium", count: stats.medium, color: "text-binding-medium" },
-              { label: "Weak", count: stats.weak, color: "text-binding-weak" },
-              { label: "Non-binder", count: stats.nonBinder, color: "text-binding-non" },
-              { label: "No expr.", count: stats.noExpression, color: "text-muted-foreground" },
-            ].map(({ label, count, color }) => (
-              <div key={label} className="text-center p-2 rounded-sm bg-muted/30">
-                <div className={cn("text-lg font-semibold font-mono", color)}>
-                  {count}
-                </div>
-                <div className="text-[10px] text-muted-foreground">{label}</div>
-              </div>
-            ))}
-          </div>
-
           {/* View toggle + Download */}
           <div className="flex items-center gap-2">
             <div className="flex rounded-sm border border-border overflow-hidden">
@@ -232,124 +215,164 @@ export function ResultsViewer() {
           </div>
 
           {view === "chart" ? (
-            /* Vertical bar chart */
-            <div className="space-y-2">
-              {/* Y-axis label */}
-              <div className="text-[10px] text-muted-foreground font-mono">
-                ← stronger binding (lower KD)
-              </div>
-
-              {/* Bars container */}
-              <div className="flex items-end gap-[3px] h-[200px] pt-2">
-                {chartSorted.map((r, i) => {
-                  const isControl = r.sequence_name === "Ctrl-Tras";
-                  const height = getBarHeight(r.kd);
-                  return (
-                    <div
-                      key={r.sequence_id}
-                      className="flex-1 flex flex-col items-center justify-end h-full relative group"
-                      onMouseEnter={() => setHoveredIdx(i)}
-                      onMouseLeave={() => setHoveredIdx(null)}
-                    >
-                      {/* Bar */}
+            /* Vertical bar chart with Y-axis */
+            <div className="space-y-1">
+              <div className="flex" ref={chartRef}>
+                {/* Y-axis labels */}
+                <div className="flex flex-col justify-between h-[220px] pr-2 pt-1 pb-1 shrink-0">
+                  {Y_AXIS_TICKS.map((tick) => {
+                    const pct = ((tick.logKd - LOG_KD_MIN) / (LOG_KD_MAX - LOG_KD_MIN)) * 100;
+                    return (
                       <div
-                        className={cn(
-                          "w-full rounded-t-sm transition-all duration-700 ease-out min-h-[2px]",
-                          isControl
-                            ? "bg-foreground/25"
-                            : BINDING_COLORS[r.binding_strength]
-                        )}
+                        key={tick.label}
+                        className="text-[9px] font-mono text-muted-foreground/60 text-right leading-none"
                         style={{
-                          height: `${height}%`,
-                          transitionDelay: `${i * 30}ms`,
+                          position: "relative",
+                          bottom: `${pct - 50}%`,
                         }}
-                      />
-
-                      {/* Tooltip on hover */}
-                      {hoveredIdx === i && (
-                        <div className="absolute bottom-full mb-2 z-20 bg-card border border-border shadow-none rounded-sm p-2.5 text-xs whitespace-nowrap left-1/2 -translate-x-1/2">
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="font-medium text-foreground">
-                              {r.sequence_name}
-                            </span>
-                            {isControl && (
-                              <Badge variant="outline" className="text-[9px] py-0 font-mono">
-                                ctrl
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="space-y-0.5 text-muted-foreground">
-                            <div className="flex justify-between gap-3">
-                              <span>KD</span>
-                              <span className="font-mono">{formatKd(r.kd!)}</span>
-                            </div>
-                            <div className="flex justify-between gap-3">
-                              <span>k_on</span>
-                              <span className="font-mono">{formatScientific(r.kon!)}</span>
-                            </div>
-                            <div className="flex justify-between gap-3">
-                              <span>k_off</span>
-                              <span className="font-mono">{formatScientific(r.koff!)}</span>
-                            </div>
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "text-[9px] mt-1",
-                              BINDING_TEXT_COLORS[r.binding_strength]
-                            )}
-                          >
-                            {r.binding_strength.replace("_", " ")}
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* X-axis labels (rotated) */}
-              <div className="flex gap-[3px]">
-                {chartSorted.map((r) => {
-                  const isControl = r.sequence_name === "Ctrl-Tras";
-                  return (
-                    <div key={r.sequence_id} className="flex-1 overflow-hidden">
-                      <div
-                        className={cn(
-                          "text-[9px] font-mono truncate text-center",
-                          isControl ? "text-foreground font-medium" : "text-muted-foreground/60"
-                        )}
-                        title={`${r.sequence_name}: ${formatKd(r.kd!)}`}
                       >
-                        {r.sequence_name.replace("VHH-", "")}
+                        {tick.label}
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-4 text-[10px] pt-1">
-                {[
-                  { label: "Strong", color: "bg-binding-strong" },
-                  { label: "Medium", color: "bg-binding-medium" },
-                  { label: "Weak", color: "bg-binding-weak" },
-                  { label: "Non-binder", color: "bg-binding-non" },
-                  { label: "Control", color: "bg-foreground/25" },
-                ].map(({ label, color }) => (
-                  <span key={label} className="flex items-center gap-1">
-                    <span className={cn("w-2.5 h-2.5 rounded-sm", color)} />
-                    <span className="text-muted-foreground">{label}</span>
-                  </span>
-                ))}
-              </div>
-
-              {/* Non-measurable sequences note */}
-              {DEMO_RESULTS.some((r) => r.kd == null) && (
-                <div className="text-[10px] text-muted-foreground/50 italic">
-                  {DEMO_RESULTS.filter((r) => r.kd == null).length} sequence(s) excluded from chart (no binding / no expression)
+                    );
+                  })}
                 </div>
-              )}
+
+                {/* Chart area */}
+                <div className="flex-1 relative">
+                  {/* Horizontal grid lines */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {Y_AXIS_TICKS.map((tick) => {
+                      const pct = ((tick.logKd - LOG_KD_MIN) / (LOG_KD_MAX - LOG_KD_MIN)) * 100;
+                      return (
+                        <div
+                          key={tick.label}
+                          className="absolute w-full border-t border-border/40"
+                          style={{ bottom: `${pct}%` }}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* Bars */}
+                  <div className="flex items-end gap-[2px] h-[220px] relative z-10">
+                    {chartSorted.map((r, i) => {
+                      const isControl = r.sequence_name === "Ctrl-Tras";
+                      const height = getBarPercent(r.kd);
+                      const isNonBinder = r.kd === null;
+                      const barCount = chartSorted.length;
+                      // Position tooltip toward center of chart to avoid clipping
+                      const isLeftHalf = i < barCount / 2;
+
+                      return (
+                        <div
+                          key={r.sequence_id}
+                          className="flex-1 flex flex-col items-center justify-end h-full relative"
+                          onMouseEnter={() => setHoveredIdx(i)}
+                          onMouseLeave={() => setHoveredIdx(null)}
+                        >
+                          {/* Bar */}
+                          <div
+                            className={cn(
+                              "w-[60%] rounded-t-sm transition-all duration-700 ease-out",
+                              isNonBinder
+                                ? "bg-transparent"
+                                : isControl
+                                  ? "bg-foreground/20"
+                                  : "bg-accent-blue"
+                            )}
+                            style={{
+                              height: isNonBinder ? "1px" : `${height}%`,
+                              transitionDelay: `${i * 30}ms`,
+                              ...(isNonBinder ? { borderTop: "1px dashed var(--color-muted-foreground)", opacity: 0.3 } : {}),
+                            }}
+                          />
+
+                          {/* Tooltip on hover */}
+                          {hoveredIdx === i && (
+                            <div
+                              className={cn(
+                                "absolute z-20 bg-card border border-border rounded-sm p-2.5 text-xs whitespace-nowrap",
+                                isNonBinder ? "bottom-2" : "bottom-full mb-2",
+                              )}
+                              style={{
+                                [isLeftHalf ? "left" : "right"]: "0",
+                              }}
+                            >
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <span className="font-medium text-foreground">
+                                  {r.sequence_name}
+                                </span>
+                                {isControl && (
+                                  <Badge variant="outline" className="text-[9px] py-0 font-mono">
+                                    ctrl
+                                  </Badge>
+                                )}
+                              </div>
+                              {r.kd != null ? (
+                                <div className="space-y-0.5 text-muted-foreground">
+                                  <div className="flex justify-between gap-3">
+                                    <span>KD</span>
+                                    <span className="font-mono">{formatKd(r.kd)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-3">
+                                    <span>k<sub>on</sub></span>
+                                    <span className="font-mono">{formatScientific(r.kon!)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-3">
+                                    <span>k<sub>off</sub></span>
+                                    <span className="font-mono">{formatScientific(r.koff!)}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-muted-foreground/60 italic">
+                                  {r.binding_strength === "no_expression" ? "No expression" : "No binding detected"}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* X-axis labels */}
+              <div className="flex" style={{ paddingLeft: "36px" }}>
+                <div className="flex-1 flex gap-[2px]">
+                  {chartSorted.map((r) => {
+                    const isControl = r.sequence_name === "Ctrl-Tras";
+                    return (
+                      <div key={r.sequence_id} className="flex-1 overflow-hidden">
+                        <div
+                          className={cn(
+                            "text-[8px] font-mono truncate text-center",
+                            isControl ? "text-foreground font-medium" : "text-muted-foreground/50"
+                          )}
+                          title={r.sequence_name}
+                        >
+                          {r.sequence_name.replace("VHH-", "").replace("Ctrl-Tras", "Ctrl")}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Minimal legend */}
+              <div className="flex items-center gap-4 text-[10px] pt-1">
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-accent-blue" />
+                  <span className="text-muted-foreground">Binder</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-foreground/20" />
+                  <span className="text-muted-foreground">Control</span>
+                </span>
+                <span className="text-muted-foreground/50 ml-auto font-mono">
+                  KD (M) — lower = stronger
+                </span>
+              </div>
             </div>
           ) : (
             /* Table view */

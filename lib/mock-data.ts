@@ -180,27 +180,27 @@ interface DemoResultFixture extends AffinityResult {
 }
 
 export const DEMO_RESULTS = [
-  // Strong binders (KD < 5 nM)
+  // Strong binders (KD < 5 nM) — varied gaps
   { sequence_id: "seq-01", sequence_name: "VHH-01", kd: 8.1e-10, kon: 2.4e6, koff: 1.9e-3, binding_strength: "strong", r_squared: 0.999 },
-  { sequence_id: "seq-02", sequence_name: "VHH-02", kd: 1.2e-9, kon: 1.8e6, koff: 2.2e-3, binding_strength: "strong", r_squared: 0.998 },
+  { sequence_id: "seq-02", sequence_name: "VHH-02", kd: 9.4e-10, kon: 2.1e6, koff: 2.0e-3, binding_strength: "strong", r_squared: 0.998 },
   { sequence_id: "seq-03", sequence_name: "VHH-03", kd: 2.5e-9, kon: 1.4e6, koff: 3.5e-3, binding_strength: "strong", r_squared: 0.997 },
   { sequence_id: "seq-04", sequence_name: "VHH-04", kd: 4.7e-9, kon: 9.8e5, koff: 4.6e-3, binding_strength: "strong", r_squared: 0.996 },
-  // Medium binders (5-50 nM)
-  { sequence_id: "seq-05", sequence_name: "VHH-05", kd: 8.3e-9, kon: 6.2e5, koff: 5.1e-3, binding_strength: "medium", r_squared: 0.994 },
-  { sequence_id: "seq-06", sequence_name: "VHH-06", kd: 1.2e-8, kon: 4.5e5, koff: 5.4e-3, binding_strength: "medium", r_squared: 0.993 },
-  { sequence_id: "seq-07", sequence_name: "VHH-07", kd: 1.8e-8, kon: 3.2e5, koff: 5.8e-3, binding_strength: "medium", r_squared: 0.991 },
-  { sequence_id: "seq-08", sequence_name: "VHH-08", kd: 3.5e-8, kon: 2.1e5, koff: 7.4e-3, binding_strength: "medium", r_squared: 0.988 },
+  // Medium binders (5-50 nM) — bigger jumps
+  { sequence_id: "seq-05", sequence_name: "VHH-05", kd: 6.1e-9, kon: 7.4e5, koff: 4.5e-3, binding_strength: "medium", r_squared: 0.994 },
+  { sequence_id: "seq-06", sequence_name: "VHH-06", kd: 1.4e-8, kon: 4.5e5, koff: 6.3e-3, binding_strength: "medium", r_squared: 0.993 },
+  { sequence_id: "seq-07", sequence_name: "VHH-07", kd: 1.5e-8, kon: 3.8e5, koff: 5.7e-3, binding_strength: "medium", r_squared: 0.991 },
+  { sequence_id: "seq-08", sequence_name: "VHH-08", kd: 4.2e-8, kon: 2.1e5, koff: 8.8e-3, binding_strength: "medium", r_squared: 0.988 },
   // Weak binders (50-500 nM)
-  { sequence_id: "seq-09", sequence_name: "VHH-09", kd: 6.7e-8, kon: 1.5e5, koff: 1.0e-2, binding_strength: "weak", r_squared: 0.982 },
-  { sequence_id: "seq-10", sequence_name: "VHH-10", kd: 1.2e-7, kon: 8.4e4, koff: 1.0e-2, binding_strength: "weak", r_squared: 0.978 },
+  { sequence_id: "seq-09", sequence_name: "VHH-09", kd: 7.8e-8, kon: 1.5e5, koff: 1.2e-2, binding_strength: "weak", r_squared: 0.982 },
+  { sequence_id: "seq-10", sequence_name: "VHH-10", kd: 9.3e-8, kon: 1.1e5, koff: 1.0e-2, binding_strength: "weak", r_squared: 0.978 },
   // Control (156 nM)
   { sequence_id: "seq-ctrl", sequence_name: "Ctrl-Tras", kd: 1.56e-7, kon: 7.1e4, koff: 1.1e-2, binding_strength: "weak", r_squared: 0.975 },
-  { sequence_id: "seq-11", sequence_name: "VHH-11", kd: 2.1e-7, kon: 5.2e4, koff: 1.1e-2, binding_strength: "weak", r_squared: 0.971 },
-  { sequence_id: "seq-12", sequence_name: "VHH-12", kd: 4.5e-7, kon: 2.8e4, koff: 1.3e-2, binding_strength: "weak", r_squared: 0.963 },
+  { sequence_id: "seq-11", sequence_name: "VHH-11", kd: 3.1e-7, kon: 3.6e4, koff: 1.1e-2, binding_strength: "weak", r_squared: 0.971 },
+  { sequence_id: "seq-12", sequence_name: "VHH-12", kd: 5.8e-7, kon: 2.2e4, koff: 1.3e-2, binding_strength: "weak", r_squared: 0.963 },
   // Very weak / non-binders
-  { sequence_id: "seq-13", sequence_name: "VHH-13", kd: 8.9e-7, kon: 1.2e4, koff: 1.1e-2, binding_strength: "non_binder", r_squared: 0.951 },
-  { sequence_id: "seq-14", sequence_name: "VHH-14", kd: 1.5e-6, kon: 8.1e3, koff: 1.2e-2, binding_strength: "non_binder", r_squared: 0.942 },
-  { sequence_id: "seq-15", sequence_name: "VHH-15", kd: 3.2e-6, kon: 4.5e3, koff: 1.4e-2, binding_strength: "non_binder", r_squared: 0.928 },
+  { sequence_id: "seq-13", sequence_name: "VHH-13", kd: 1.1e-6, kon: 1.0e4, koff: 1.1e-2, binding_strength: "non_binder", r_squared: 0.951 },
+  { sequence_id: "seq-14", sequence_name: "VHH-14", kd: 2.7e-6, kon: 5.3e3, koff: 1.4e-2, binding_strength: "non_binder", r_squared: 0.942 },
+  { sequence_id: "seq-15", sequence_name: "VHH-15", kd: 4.1e-6, kon: 3.8e3, koff: 1.6e-2, binding_strength: "non_binder", r_squared: 0.928 },
   // No measurable binding
   { sequence_id: "seq-16", sequence_name: "VHH-16", kd: null, kon: null, koff: null, binding_strength: "non_binder", r_squared: null },
   { sequence_id: "seq-17", sequence_name: "VHH-17", kd: null, kon: null, koff: null, binding_strength: "non_binder", r_squared: null },
