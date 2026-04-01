@@ -221,15 +221,73 @@ export function ProteinViewer({
       {/* White background */}
       <div className="absolute inset-0 bg-white" />
 
-      {/* 3Dmol container */}
+      {/* 3Dmol container — pointer-events disabled, interaction zone re-enables center */}
       <div
         ref={containerRef}
         className="absolute inset-0 z-10"
-        style={{
-          cursor: size === "lg" ? "grab" : "default",
-          pointerEvents: size === "sm" ? "none" : "auto",
-        }}
+        style={{ pointerEvents: "none" }}
       />
+
+      {/* Interaction zone: centered 50%×50% area that passes events to the canvas */}
+      {size === "lg" && status === "ready" && (
+        <div
+          className="absolute z-15 rounded"
+          style={{
+            top: "25%",
+            left: "25%",
+            width: "50%",
+            height: "50%",
+            cursor: "grab",
+          }}
+          onMouseDown={(e) => {
+            // Forward mouse events to the 3Dmol canvas
+            const canvas = containerRef.current?.querySelector("canvas");
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            const synth = new MouseEvent(e.type, {
+              clientX: e.clientX,
+              clientY: e.clientY,
+              button: e.button,
+              bubbles: true,
+            });
+            canvas.dispatchEvent(synth);
+
+            // Track mouse moves and forward them too
+            const onMove = (me: MouseEvent) => {
+              canvas.dispatchEvent(new MouseEvent("mousemove", {
+                clientX: me.clientX,
+                clientY: me.clientY,
+                button: me.button,
+                bubbles: true,
+              }));
+            };
+            const onUp = (me: MouseEvent) => {
+              canvas.dispatchEvent(new MouseEvent("mouseup", {
+                clientX: me.clientX,
+                clientY: me.clientY,
+                button: me.button,
+                bubbles: true,
+              }));
+              document.removeEventListener("mousemove", onMove);
+              document.removeEventListener("mouseup", onUp);
+            };
+            document.addEventListener("mousemove", onMove);
+            document.addEventListener("mouseup", onUp);
+          }}
+          onWheel={(e) => {
+            const canvas = containerRef.current?.querySelector("canvas");
+            if (!canvas) return;
+            canvas.dispatchEvent(new WheelEvent("wheel", {
+              deltaY: e.deltaY,
+              deltaX: e.deltaX,
+              clientX: e.clientX,
+              clientY: e.clientY,
+              bubbles: true,
+            }));
+            e.preventDefault();
+          }}
+        />
+      )}
 
       {/* Loading state */}
       {status === "loading" && (
