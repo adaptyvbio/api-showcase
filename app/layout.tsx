@@ -14,9 +14,22 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Adaptyv API Showcase",
+  title: "Adaptyv Bio — API for AI Agents & Automated Protein Engineering",
   description:
-    "Interactive developer showcase for the Adaptyv Foundry public API. Explore protein targets, estimate costs, and build experiments.",
+    "Let your AI agents run real protein experiments. Submit sequences via API, screen binders with BLI/SPR, and get kinetic data back — fully programmatic, no manual steps.",
+  openGraph: {
+    title: "Adaptyv Bio — API for AI Agents & Automated Protein Engineering",
+    description:
+      "Let your AI agents run real protein experiments. Submit sequences via API, screen binders with BLI/SPR, and get kinetic data back — fully programmatic, no manual steps.",
+    siteName: "Adaptyv Bio",
+    url: "https://agents.adaptyvbio.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Adaptyv Bio — API for AI Agents & Automated Protein Engineering",
+    description:
+      "Let your AI agents run real protein experiments. Submit sequences, get binding data back. Fully programmatic.",
+  },
 };
 
 export default function RootLayout({
