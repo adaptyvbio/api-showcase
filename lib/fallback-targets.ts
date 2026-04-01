@@ -57,26 +57,91 @@ export const FALLBACK_TARGETS: Target[] = [
   },
 ];
 
-const PRIMARY_TARGET = FALLBACK_TARGETS[0];
-
-const FALLBACK_TARGET_DETAILS: Record<string, TargetDetail> = {
-  [PRIMARY_TARGET.id]: {
-    ...PRIMARY_TARGET,
-    details: {
-      gene_names: ["ERBB2", "HER2", "NEU"],
-      organism: "Canis lupus familiaris",
-      expression_system: "HEK293",
-      sequence: "TQVCTGTDMKLRLPASPETHLDMLRHLYQGCQVVQGNL...",
-      sequence_length: 630,
-      family: "ErbB receptor tyrosine kinase",
-      subcellular_locations: ["Cell membrane"],
-      tags: ["His Tag", "Recombinant"],
-      molecular_weight: "70.2 kDa",
-      description:
-        "Recombinant Canine HER2/ErbB2 protein with C-terminal His tag, expressed in HEK293 cells. Suitable for BLI and SPR binding assays.",
-    },
+const DETAILS_BY_INDEX: Array<{
+  gene_names: string[];
+  organism: string;
+  expression_system: string;
+  sequence_length: number;
+  family: string;
+  tags: string[];
+  molecular_weight: string;
+  description: string;
+}> = [
+  {
+    gene_names: ["ERBB2", "HER2", "NEU"],
+    organism: "Canis lupus familiaris",
+    expression_system: "HEK293",
+    sequence_length: 630,
+    family: "ErbB receptor tyrosine kinase",
+    tags: ["His Tag", "Recombinant"],
+    molecular_weight: "70.2 kDa",
+    description: "Recombinant Canine HER2/ErbB2 protein with C-terminal His tag, expressed in HEK293 cells. Suitable for BLI and SPR binding assays.",
   },
-};
+  {
+    gene_names: ["TNFSF13B", "BAFF", "BLyS"],
+    organism: "Canis lupus familiaris",
+    expression_system: "HEK293",
+    sequence_length: 285,
+    family: "TNF superfamily",
+    tags: ["Fc Tag", "Recombinant"],
+    molecular_weight: "52.3 kDa",
+    description: "Recombinant Canine BLyS/BAFF protein with C-terminal human Fc tag. B-cell activating factor involved in B-cell maturation and survival.",
+  },
+  {
+    gene_names: ["CD274", "PD-L1", "B7-H1"],
+    organism: "Canis lupus familiaris",
+    expression_system: "HEK293",
+    sequence_length: 238,
+    family: "B7 / CD28 superfamily",
+    tags: ["Fc Tag", "ECD", "Recombinant"],
+    molecular_weight: "50.1 kDa",
+    description: "Recombinant Canine PD-L1 extracellular domain with C-terminal Fc tag. Key immune checkpoint ligand for PD-1 receptor.",
+  },
+  {
+    gene_names: ["IL6"],
+    organism: "Macaca fascicularis",
+    expression_system: "HEK293",
+    sequence_length: 187,
+    family: "Interleukin-6 family",
+    tags: ["His Tag", "Recombinant"],
+    molecular_weight: "21.0 kDa",
+    description: "Recombinant Cynomolgus IL-6 with C-terminal His tag. Pro-inflammatory cytokine involved in immune regulation and acute-phase response.",
+  },
+  {
+    gene_names: ["KDR", "VEGFR2", "FLK1"],
+    organism: "Macaca fascicularis",
+    expression_system: "HEK293",
+    sequence_length: 764,
+    family: "VEGF receptor tyrosine kinase",
+    tags: ["His Tag", "Recombinant"],
+    molecular_weight: "85.4 kDa",
+    description: "Recombinant Cynomolgus VEGFR2 extracellular domain with C-terminal His tag. Primary receptor for VEGF-mediated angiogenesis signaling.",
+  },
+  {
+    gene_names: ["TNF", "TNFA"],
+    organism: "Homo sapiens",
+    expression_system: "E. coli",
+    sequence_length: 157,
+    family: "TNF superfamily",
+    tags: ["His Tag", "Recombinant"],
+    molecular_weight: "17.4 kDa",
+    description: "Recombinant Human TNF-alpha with C-terminal His tag. Key pro-inflammatory cytokine involved in systemic inflammation.",
+  },
+];
+
+const FALLBACK_TARGET_DETAILS: Record<string, TargetDetail> = Object.fromEntries(
+  FALLBACK_TARGETS.map((t, i) => [
+    t.id,
+    {
+      ...t,
+      details: {
+        ...DETAILS_BY_INDEX[i],
+        sequence: "...",
+        subcellular_locations: ["Cell membrane"],
+      },
+    },
+  ])
+);
 
 export function filterFallbackTargets(search: string) {
   if (!search) {
