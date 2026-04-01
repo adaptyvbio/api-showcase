@@ -95,20 +95,30 @@ function FlipWord() {
     return () => clearInterval(timer);
   }, [flip]);
 
+  // Split into words to preserve natural spacing
+  const words = display.split(" ");
+
   return (
-    <span className="inline-block min-w-[14ch] text-left">
-      {display.split("").map((char, i) => (
-        <span
-          key={`${i}-${char}`}
-          className="inline-block transition-colors duration-150"
-          style={{
-            color:
-              char !== PHRASES[phraseIdx][i]
-                ? "var(--color-accent-blue)"
-                : "inherit",
-          }}
-        >
-          {char}
+    <span className="inline">
+      {words.map((word, wi) => (
+        <span key={wi}>
+          {wi > 0 && " "}
+          {word.split("").map((char, ci) => {
+            // Calculate the global char index (accounting for spaces)
+            const globalIdx = display.indexOf(word, display.indexOf(words[wi - 1] ?? "") + (words[wi - 1]?.length ?? 0)) + ci;
+            const isScrambling = char !== (PHRASES[phraseIdx][globalIdx] ?? "");
+            return (
+              <span
+                key={`${ci}-${char}`}
+                className="transition-colors duration-150"
+                style={{
+                  color: isScrambling ? "var(--color-accent-blue)" : "inherit",
+                }}
+              >
+                {char}
+              </span>
+            );
+          })}
         </span>
       ))}
     </span>
