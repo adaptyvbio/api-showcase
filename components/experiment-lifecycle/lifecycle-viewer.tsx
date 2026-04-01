@@ -58,8 +58,10 @@ function formatTimestamp(iso: string): string {
 export function LifecycleViewer() {
   const [visibleCount, setVisibleCount] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const feedEndRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const startAnimation = useCallback(() => {
     if (visibleCount >= DEMO_UPDATES.length) {
@@ -73,7 +75,27 @@ export function LifecycleViewer() {
   const resetAnimation = () => {
     setIsPlaying(false);
     setVisibleCount(0);
+    setHasAutoStarted(false);
   };
+
+  // Auto-start when section scrolls into view
+  useEffect(() => {
+    if (hasAutoStarted) return;
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsPlaying(true);
+          setHasAutoStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasAutoStarted]);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -118,6 +140,7 @@ export function LifecycleViewer() {
     : undefined;
 
   return (
+    <div ref={sectionRef}>
     <ExampleBlock
       id="track-progress"
       number={4}
@@ -273,5 +296,6 @@ export function LifecycleViewer() {
         />
       }
     />
+    </div>
   );
 }

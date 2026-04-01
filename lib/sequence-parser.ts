@@ -12,6 +12,61 @@ function isAminoAcidSequence(s: string): boolean {
   return cleaned.length >= 10 && AA_CHARS.test(cleaned);
 }
 
+function parseDelimitedTable(text: string, delimiter: "," | "\t") {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let inQuotes = false;
+
+  const pushField = () => {
+    row.push(field.trim());
+    field = "";
+  };
+
+  const pushRow = () => {
+    pushField();
+    if (row.some((value) => value.trim().length > 0)) {
+      rows.push(row);
+    }
+    row = [];
+  };
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+
+    if (char === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (!inQuotes && char === delimiter) {
+      pushField();
+      continue;
+    }
+
+    if (!inQuotes && (char === "\n" || char === "\r")) {
+      if (char === "\r" && text[i + 1] === "\n") {
+        i += 1;
+      }
+      pushRow();
+      continue;
+    }
+
+    field += char;
+  }
+
+  if (field.length > 0 || row.length > 0) {
+    pushRow();
+  }
+
+  return rows;
+}
+
 export function parseFasta(text: string): ParsedSequence[] {
   const results: ParsedSequence[] = [];
   let currentName = "";
@@ -36,12 +91,14 @@ export function parseFasta(text: string): ParsedSequence[] {
 }
 
 export function parseCsv(text: string): ParsedSequence[] {
-  const lines = text.split("\n").filter((l) => l.trim());
-  if (lines.length < 2) return [];
+  const firstLine = text.split(/\r?\n/, 1)[0] ?? "";
+  const delimiter = firstLine.includes("\t") ? "\t" : ",";
+  const rows = parseDelimitedTable(text, delimiter);
+  if (rows.length < 2) return [];
 
-  // Detect delimiter
-  const delimiter = lines[0].includes("\t") ? "\t" : ",";
-  const headers = lines[0].split(delimiter).map((h) => h.trim().toLowerCase().replace(/['"]/g, ""));
+  const headers = rows[0].map((header) =>
+    header.trim().toLowerCase().replace(/['"]/g, "")
+  );
 
   // Find sequence column
   const seqIdx = headers.findIndex((h) =>
@@ -55,28 +112,35 @@ export function parseCsv(text: string): ParsedSequence[] {
 
   if (seqIdx === -1) {
     // Try to auto-detect: find the column with AA-like data
-    const dataLine = lines[1].split(delimiter);
-    const autoSeqIdx = dataLine.findIndex((v) => isAminoAcidSequence(v.replace(/['"]/g, "")));
+    const dataLine = rows[1] ?? [];
+    const autoSeqIdx = dataLine.findIndex((value) => isAminoAcidSequence(value));
     if (autoSeqIdx === -1) return [];
 
-    return lines.slice(1).map((line, i) => {
-      const cols = line.split(delimiter).map((c) => c.trim().replace(/['"]/g, ""));
-      const seqValue = cols[autoSeqIdx] ?? "";
-      const nameValue = nameIdx >= 0 ? cols[nameIdx] : cols[0] !== seqValue ? cols[0] : "";
-      return {
-        name: nameValue || `seq_${i + 1}`,
-        sequence: seqValue.toUpperCase(),
-      };
-    }).filter((s) => s.sequence.length > 0);
+    return rows
+      .slice(1)
+      .map((cols, i) => {
+        const seqValue = (cols[autoSeqIdx] ?? "").replace(/\s/g, "");
+        const nameValue =
+          nameIdx >= 0
+            ? cols[nameIdx]
+            : cols[0] !== seqValue
+              ? cols[0]
+              : "";
+        return {
+          name: nameValue || `seq_${i + 1}`,
+          sequence: seqValue.toUpperCase(),
+        };
+      })
+      .filter((sequence) => sequence.sequence.length > 0);
   }
 
-  return lines.slice(1).map((line, i) => {
-    const cols = line.split(delimiter).map((c) => c.trim().replace(/['"]/g, ""));
-    return {
+  return rows
+    .slice(1)
+    .map((cols, i) => ({
       name: (nameIdx >= 0 ? cols[nameIdx] : "") || `seq_${i + 1}`,
-      sequence: (cols[seqIdx] ?? "").toUpperCase(),
-    };
-  }).filter((s) => s.sequence.length > 0);
+      sequence: (cols[seqIdx] ?? "").replace(/\s/g, "").toUpperCase(),
+    }))
+    .filter((sequence) => sequence.sequence.length > 0);
 }
 
 export function parsePlainText(text: string): ParsedSequence[] {

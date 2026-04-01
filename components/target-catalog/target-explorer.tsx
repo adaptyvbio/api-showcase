@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Search, MapPin, DollarSign, ExternalLink } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Search,
+  MapPin,
+  DollarSign,
+  ExternalLink,
+  Loader2,
+  TriangleAlert,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatCents } from "@/lib/utils";
@@ -10,59 +17,194 @@ import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
 import { ProteinViewer } from "@/components/shared/protein-viewer";
 
+interface ApiPanelState {
+  method: "GET" | "POST";
+  endpoint: string;
+  response: unknown;
+  status: number | null;
+  activeTab: "request" | "response";
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof Error && error.name === "AbortError";
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return fallback;
+}
+
+async function readJsonResponse<T>(response: Response): Promise<T> {
+  let payload: unknown = null;
+
+  try {
+    payload = await response.json();
+  } catch {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  if (!response.ok) {
+    const message =
+      typeof payload === "object" &&
+      payload !== null &&
+      "error" in payload &&
+      typeof payload.error === "object" &&
+      payload.error !== null &&
+      "message" in payload.error &&
+      typeof payload.error.message === "string"
+        ? payload.error.message
+        : `Request failed with status ${response.status}`;
+
+    throw new Error(message);
+  }
+
+  return payload as T;
+}
+
 export function TargetExplorer() {
   const [search, setSearch] = useState("");
   const [targets, setTargets] = useState<Target[]>([]);
   const [selectedTarget, setSelectedTarget] = useState<TargetDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiMethod, setApiMethod] = useState<"GET" | "POST">("GET");
-  const [apiEndpoint, setApiEndpoint] = useState("/targets?search=&selfservice_only=true");
-  const [apiResponse, setApiResponse] = useState<unknown>(null);
-  const [apiStatus, setApiStatus] = useState<number | null>(null);
-  const [apiTab, setApiTab] = useState<"request" | "response">("request");
-
-  const fetchTargets = useCallback(async (query: string) => {
-    setIsLoading(true);
-    setApiMethod("GET");
-    setApiEndpoint(`/targets?search=${encodeURIComponent(query)}&selfservice_only=true`);
-    setApiTab("request");
-
-    try {
-      const res = await fetch(`/api/targets?search=${encodeURIComponent(query)}`);
-      const data: TargetsResponse = await res.json();
-      setTargets(data.items ?? []);
-      setApiResponse(data);
-      setApiStatus(res.status);
-      setApiTab("response");
-    } catch {
-      setApiStatus(500);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [pendingTargetId, setPendingTargetId] = useState<string | null>(null);
+  const [uiError, setUiError] = useState<string | null>(null);
+  const [apiPanelState, setApiPanelState] = useState<ApiPanelState>({
+    method: "GET",
+    endpoint: "/targets?search=&selfservice_only=true",
+    response: null,
+    status: null,
+    activeTab: "request",
+  });
+  const detailAbortRef = useRef<AbortController | null>(null);
+  const searchRequestIdRef = useRef(0);
+  const detailRequestIdRef = useRef(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => fetchTargets(search), 300);
-    return () => clearTimeout(timer);
-  }, [search, fetchTargets]);
+    const controller = new AbortController();
+    const requestId = ++searchRequestIdRef.current;
+    const endpoint = `/targets?search=${encodeURIComponent(search)}&selfservice_only=true`;
+
+    const timer = setTimeout(async () => {
+      setIsLoading(true);
+      setUiError(null);
+      setApiPanelState((state) => ({
+        ...state,
+        method: "GET",
+        endpoint,
+        activeTab: "request",
+      }));
+
+      try {
+        const response = await fetch(`/api/targets?search=${encodeURIComponent(search)}`, {
+          signal: controller.signal,
+        });
+        const data = await readJsonResponse<TargetsResponse>(response);
+
+        if (controller.signal.aborted || requestId !== searchRequestIdRef.current) {
+          return;
+        }
+
+        setTargets(data.items ?? []);
+        setApiPanelState((state) => ({
+          ...state,
+          response: data,
+          status: response.status,
+          activeTab: "response",
+        }));
+      } catch (error) {
+        if (isAbortError(error) || requestId !== searchRequestIdRef.current) {
+          return;
+        }
+
+        setUiError(getErrorMessage(error, "Unable to load target search results."));
+        setApiPanelState((state) => ({
+          ...state,
+          response: {
+            error: {
+              message: getErrorMessage(error, "Unable to load target search results."),
+            },
+          },
+          status: 500,
+          activeTab: "response",
+        }));
+      } finally {
+        if (!controller.signal.aborted && requestId === searchRequestIdRef.current) {
+          setIsLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [search]);
+
+  useEffect(() => {
+    return () => {
+      detailAbortRef.current?.abort();
+    };
+  }, []);
 
   const handleSelectTarget = async (target: Target) => {
+    detailAbortRef.current?.abort();
+
+    const controller = new AbortController();
+    detailAbortRef.current = controller;
+    const requestId = ++detailRequestIdRef.current;
+    const endpoint = `/targets/${target.id}`;
+
     setIsLoading(true);
-    setApiMethod("GET");
-    setApiEndpoint(`/targets/${target.id}`);
-    setApiTab("request");
+    setPendingTargetId(target.id);
+    setUiError(null);
+    setApiPanelState((state) => ({
+      ...state,
+      method: "GET",
+      endpoint,
+      activeTab: "request",
+    }));
 
     try {
-      const res = await fetch(`/api/targets/${target.id}`);
-      const data: TargetDetail = await res.json();
+      const response = await fetch(`/api/targets/${target.id}`, {
+        signal: controller.signal,
+      });
+      const data = await readJsonResponse<TargetDetail>(response);
+
+      if (controller.signal.aborted || requestId !== detailRequestIdRef.current) {
+        return;
+      }
+
       setSelectedTarget(data);
-      setApiResponse(data);
-      setApiStatus(res.status);
-      setApiTab("response");
-    } catch {
-      setApiStatus(500);
+      setApiPanelState((state) => ({
+        ...state,
+        response: data,
+        status: response.status,
+        activeTab: "response",
+      }));
+    } catch (error) {
+      if (isAbortError(error) || requestId !== detailRequestIdRef.current) {
+        return;
+      }
+
+      setUiError(getErrorMessage(error, "Unable to load target details."));
+      setApiPanelState((state) => ({
+        ...state,
+        response: {
+          error: {
+            message: getErrorMessage(error, "Unable to load target details."),
+          },
+        },
+        status: 500,
+        activeTab: "response",
+      }));
     } finally {
-      setIsLoading(false);
+      if (!controller.signal.aborted && requestId === detailRequestIdRef.current) {
+        setIsLoading(false);
+        setPendingTargetId(null);
+      }
     }
   };
 
@@ -81,12 +223,25 @@ export function TargetExplorer() {
               placeholder="Search targets (e.g. HER2, TNF, PD-L1)..."
               value={search}
               onChange={(e) => {
+                detailAbortRef.current?.abort();
                 setSearch(e.target.value);
                 setSelectedTarget(null);
+                setPendingTargetId(null);
+                setUiError(null);
               }}
               className="pl-9 h-10"
             />
           </div>
+
+          {uiError && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/[0.05] px-3 py-2 text-sm text-destructive"
+            >
+              <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{uiError}</span>
+            </div>
+          )}
 
           {selectedTarget ? (
             <TargetDetailView
@@ -99,9 +254,16 @@ export function TargetExplorer() {
                 <TargetCard
                   key={t.id}
                   target={t}
+                  isPending={pendingTargetId === t.id}
                   onClick={() => handleSelectTarget(t)}
                 />
               ))}
+              {targets.length === 0 && isLoading && (
+                <div className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-dashed border-border py-8 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Searching targets...
+                </div>
+              )}
               {targets.length === 0 && !isLoading && (
                 <div className="col-span-2 text-center py-8 text-muted-foreground text-sm">
                   No targets found
@@ -113,24 +275,35 @@ export function TargetExplorer() {
       }
       right={
         <ApiPanel
-          method={apiMethod}
-          endpoint={apiEndpoint}
-          response={apiResponse}
-          responseStatus={apiStatus}
+          method={apiPanelState.method}
+          endpoint={apiPanelState.endpoint}
+          response={apiPanelState.response}
+          responseStatus={apiPanelState.status}
           isLoading={isLoading}
-          activeTab={apiTab}
-          onTabChange={setApiTab}
+          activeTab={apiPanelState.activeTab}
+          onTabChange={(activeTab) =>
+            setApiPanelState((state) => ({ ...state, activeTab }))
+          }
         />
       }
     />
   );
 }
 
-function TargetCard({ target, onClick }: { target: Target; onClick: () => void }) {
+function TargetCard({
+  target,
+  isPending,
+  onClick,
+}: {
+  target: Target;
+  isPending: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
-      className="text-left rounded-lg border border-border hover:border-accent-blue/30 hover:bg-accent-blue/[0.02] transition-all group overflow-hidden"
+      disabled={isPending}
+      className="text-left rounded-lg border border-border hover:border-accent-blue/30 hover:bg-accent-blue/[0.02] transition-all group overflow-hidden disabled:cursor-wait disabled:opacity-70"
     >
       {/* 3D structure thumbnail */}
       {target.uniprot_id && (
@@ -145,6 +318,9 @@ function TargetCard({ target, onClick }: { target: Target; onClick: () => void }
           <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2 group-hover:text-accent-blue transition-colors">
             {target.name}
           </h3>
+          {isPending && (
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-accent-blue" />
+          )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="secondary" className="text-[10px] font-mono">

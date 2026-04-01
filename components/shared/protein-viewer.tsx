@@ -8,9 +8,65 @@ interface ProteinViewerProps {
   className?: string;
 }
 
+type ViewerStatus = "idle" | "loading" | "ready" | "error";
+
+interface StructurePayload {
+  data: string;
+  format: "pdb";
+  label: string;
+}
+
+const structurePromiseCache = new Map<string, Promise<StructurePayload | null>>();
+
 // Strip isoform suffix for structure lookups (P04626-1 → P04626)
 function cleanUniprotId(id: string): string {
   return id.split("-")[0];
+}
+
+async function fetchStructurePayload(uniprotId: string) {
+  const cleanId = cleanUniprotId(uniprotId);
+  const cached = structurePromiseCache.get(cleanId);
+  if (cached) {
+    return cached;
+  }
+
+  const loadPromise = (async () => {
+    const urls = [
+      {
+        url: `https://swissmodel.expasy.org/repository/uniprot/${cleanId}.pdb`,
+        format: "pdb" as const,
+        label: "Swiss-Model",
+      },
+      {
+        url: `https://alphafold.ebi.ac.uk/files/AF-${cleanId}-F1-model_v4.pdb`,
+        format: "pdb" as const,
+        label: "AlphaFold",
+      },
+    ];
+
+    for (const { url, format, label } of urls) {
+      try {
+        const res = await fetch(url, { cache: "force-cache" });
+        if (!res.ok) {
+          continue;
+        }
+
+        const data = await res.text();
+        if (!data || data.length < 100) {
+          continue;
+        }
+
+        return { data, format, label };
+      } catch {
+        continue;
+      }
+    }
+
+    return null;
+  })();
+
+  structurePromiseCache.set(cleanId, loadPromise);
+  return loadPromise;
 }
 
 export function ProteinViewer({
@@ -20,84 +76,90 @@ export function ProteinViewer({
 }: ProteinViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<import("3dmol").GLViewer | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [status, setStatus] = useState<ViewerStatus>(
+    size === "lg" ? "loading" : "idle"
+  );
   const [structureSource, setStructureSource] = useState<string>("");
+  const [isVisible, setIsVisible] = useState(size === "lg");
 
   const height = size === "sm" ? 140 : 360;
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (size === "lg") {
+      setIsVisible(true);
+      return;
+    }
+
+    const container = containerRef.current;
+    if (!container || isVisible) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "240px" }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [isVisible, size]);
+
+  useEffect(() => {
+    if (!containerRef.current || !isVisible) {
+      return;
+    }
 
     let cancelled = false;
 
     async function loadStructure() {
-      const cleanId = cleanUniprotId(uniprotId);
+      setStatus("loading");
 
-      // Try SMR (Swiss-Model Repository) first, then AlphaFold
-      const urls = [
-        {
-          url: `https://swissmodel.expasy.org/repository/uniprot/${cleanId}.pdb`,
-          format: "pdb" as const,
-          label: "Swiss-Model",
-        },
-        {
-          url: `https://alphafold.ebi.ac.uk/files/AF-${cleanId}-F1-model_v4.pdb`,
-          format: "pdb" as const,
-          label: "AlphaFold",
-        },
-      ];
-
-      for (const { url, format, label } of urls) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) continue;
-          const data = await res.text();
-          if (cancelled || !data || data.length < 100) continue;
-
-          // Dynamically import 3Dmol
-          const $3Dmol = await import("3dmol");
-
-          if (cancelled || !containerRef.current) return;
-
-          // Clear any previous viewer
-          containerRef.current.innerHTML = "";
-
-          const viewer = $3Dmol.createViewer(containerRef.current, {
-            backgroundColor: "transparent",
-            antialias: true,
-          });
-
-          viewer.addModel(data, format);
-
-          // Cartoon style with a nice color scheme
-          viewer.setStyle(
-            {},
-            {
-              cartoon: {
-                color: "spectrum",
-                opacity: 0.95,
-              },
-            }
-          );
-
-          viewer.zoomTo();
-          viewer.render();
-
-          // Gentle spin for small thumbnails
-          if (size === "sm") {
-            viewer.spin("y", 0.5);
-          }
-
-          viewerRef.current = viewer;
-          setStructureSource(label);
-          setStatus("ready");
-          return;
-        } catch {
-          continue;
+      const structurePayload = await fetchStructurePayload(uniprotId);
+      if (!structurePayload || cancelled || !containerRef.current) {
+        if (!cancelled) {
+          setStatus("error");
         }
+        return;
       }
 
-      if (!cancelled) setStatus("error");
+      const $3Dmol = await import("3dmol");
+      if (cancelled || !containerRef.current) {
+        return;
+      }
+
+      containerRef.current.innerHTML = "";
+
+      const viewer = $3Dmol.createViewer(containerRef.current, {
+        backgroundColor: "transparent",
+        antialias: true,
+      });
+
+      viewer.addModel(structurePayload.data, structurePayload.format);
+      viewer.setStyle(
+        {},
+        {
+          cartoon: {
+            color: "spectrum",
+            opacity: 0.95,
+          },
+        }
+      );
+
+      viewer.zoomTo();
+      viewer.render();
+
+      if (size === "sm") {
+        viewer.spin("y", 0.5);
+      }
+
+      viewerRef.current = viewer;
+      setStructureSource(structurePayload.label);
+      setStatus("ready");
     }
 
     loadStructure();
@@ -106,9 +168,10 @@ export function ProteinViewer({
       cancelled = true;
       if (viewerRef.current) {
         viewerRef.current.stopAnimate();
+        viewerRef.current = null;
       }
     };
-  }, [uniprotId, size]);
+  }, [isVisible, size, uniprotId]);
 
   // Handle mouse interaction for large viewers
   useEffect(() => {
