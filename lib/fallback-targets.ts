@@ -13,7 +13,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P00533",
     family: "ErbB receptor tyrosine kinase",
-    url: "https://targets.adaptyvbio.com/protein/0a7ed4af-cd81-4c3b-8135-72bc91f44aa5",
+    url: "https://targets.adaptyvbio.com/protein/0a7ed4af-6f71-5093-9644-643d16c3430f",
   },
   {
     id: "comp-her2-human",
@@ -22,7 +22,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P04626",
     family: "ErbB receptor tyrosine kinase",
-    url: "https://targets.adaptyvbio.com/protein/e9cb07ba-3c0b-44c9-b7bb-03a746a06b1d",
+    url: "https://targets.adaptyvbio.com/protein/e9cb07ba-f475-5b68-ac6b-651ea42e4f46",
   },
   {
     id: "comp-il7r-human",
@@ -31,7 +31,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P16871",
     family: "Type I cytokine receptor",
-    url: "https://targets.adaptyvbio.com/protein/79fbe63f-a58c-4e07-a1ef-b09827a6cfc5",
+    url: "https://targets.adaptyvbio.com/protein/79fbe63f-41b5-5107-a66a-a95e155ef242",
   },
   {
     id: "comp-pdl1-human",
@@ -40,7 +40,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "Q9NZQ7",
     family: "B7 / CD28 superfamily",
-    url: "https://targets.adaptyvbio.com/protein/0aa3b309-06c5-4285-93cf-5cf6c21e1e3b",
+    url: "https://targets.adaptyvbio.com/protein/0aa3b309-3257-53d9-81f1-13140579db5b",
   },
   {
     id: "comp-tnf-human",
@@ -49,7 +49,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P01375",
     family: "TNF superfamily",
-    url: "https://targets.adaptyvbio.com/protein/6b3c7f73-bb62-4a03-abf6-d9b7f4f1a2c8",
+    url: "https://targets.adaptyvbio.com/protein/6b3c7f73-87b9-5009-a1f0-933d83bda58d",
   },
   {
     id: "comp-vegfa-human",
@@ -58,7 +58,7 @@ export const FALLBACK_TARGETS: Target[] = [
     organism: "Human",
     uniprot_id: "P15692",
     family: "PDGF/VEGF growth factor",
-    url: "https://targets.adaptyvbio.com/protein/c8dd6dbd-93a4-4f67-8c72-e5d3b8a2f1d9",
+    url: "https://targets.adaptyvbio.com/protein/c8dd6dbd-e1c0-50b3-b22e-e0c8d146d51b",
   },
 ];
 
