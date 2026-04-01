@@ -33,13 +33,18 @@ export interface TargetsResponse {
   offset: number;
 }
 
+export interface ExperimentSpec {
+  experiment_type: string;
+  target_id?: string | null;
+  sequences: Record<string, string>;
+  method?: string;
+  n_replicates?: number;
+  antigen_concentrations?: number[];
+  parameters?: Record<string, unknown>;
+}
+
 export interface CostEstimateRequest {
-  experiment_spec: {
-    experiment_type: string;
-    method?: string;
-    target_id: string;
-    sequences: Record<string, string>;
-  };
+  experiment_spec: ExperimentSpec;
 }
 
 export interface CostEstimateResponse {
@@ -70,15 +75,7 @@ export interface ExperimentInfo {
   name: string;
   code: string;
   status: string;
-  experiment_spec: {
-    experiment_type: string;
-    target_id: string | null;
-    sequences: Record<string, string>;
-    method?: string;
-    n_replicates?: number;
-    antigen_concentrations?: number[];
-    parameters?: Record<string, unknown>;
-  };
+  experiment_spec: ExperimentSpec;
   created_at: string;
   results_status?: string;
   experiment_url: string;
@@ -92,14 +89,40 @@ export interface ExperimentInfo {
   };
 }
 
+export type BindingStrength =
+  | "strong"
+  | "medium"
+  | "weak"
+  | "non_binder"
+  | "no_expression";
+
 export interface AffinityResult {
   sequence_id: string;
   sequence_name: string;
   kd: number | null;
   kon: number | null;
   koff: number | null;
-  binding_strength: "strong" | "medium" | "weak" | "non_binder" | "no_expression";
+  binding_strength: BindingStrength;
   r_squared: number | null;
+}
+
+export interface ResultItem extends AffinityResult {
+  id: string;
+  target_id: string;
+  target_name: string;
+  experiment_id: string;
+  experiment_code: string;
+  kd_units: "M";
+  n_replicates: number;
+  is_control: boolean;
+}
+
+export interface ResultsResponse {
+  items: ResultItem[];
+  total: number;
+  count: number;
+  offset: number;
+  data_package_url: string;
 }
 
 export interface UpdateItem {
