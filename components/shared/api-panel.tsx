@@ -16,6 +16,7 @@ interface ApiPanelProps {
   activeTab: "request" | "response";
   onTabChange?: (tab: "request" | "response") => void;
   baseUrl?: string;
+  autoScroll?: boolean;
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -47,6 +48,7 @@ export function ApiPanel({
   activeTab,
   onTabChange,
   baseUrl = "https://api.adaptyvbio.com/v1",
+  autoScroll = false,
 }: ApiPanelProps) {
   const [headersOpen, setHeadersOpen] = useState(false);
 
@@ -163,7 +165,7 @@ export function ApiPanel({
           )
         ) : response ? (
           <>
-            <CodeBlock data={response} />
+            <CodeBlock data={response} autoScroll={autoScroll} />
             <CopyButton
               text={jsonToString(response)}
               className="absolute top-2 right-2"

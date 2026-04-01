@@ -227,6 +227,7 @@ export function LifecycleViewer() {
           response={apiResponse}
           responseStatus={visibleCount > 0 ? 200 : undefined}
           activeTab={visibleCount > 0 ? "response" : "request"}
+          autoScroll
         />
       }
     />

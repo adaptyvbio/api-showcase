@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, Fragment } from "react";
+import { useMemo, useEffect, useRef, Fragment } from "react";
 
 interface CodeBlockProps {
   data: unknown;
   maxHeight?: string;
+  autoScroll?: boolean;
 }
 
 function esc(s: string): string {
@@ -70,14 +71,22 @@ function renderJson(value: unknown, indent = 0, path = "root"): React.ReactNode[
   return [String(value)];
 }
 
-export function CodeBlock({ data, maxHeight }: CodeBlockProps) {
+export function CodeBlock({ data, maxHeight, autoScroll }: CodeBlockProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const elements = useMemo(() => {
     const nodes = renderJson(data);
     return nodes.map((node, i) => <Fragment key={i}>{node}</Fragment>);
   }, [data]);
 
+  useEffect(() => {
+    if (autoScroll && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [autoScroll, data]);
+
   return (
-    <div className="absolute inset-0 overflow-auto code-scroll">
+    <div ref={scrollRef} className="absolute inset-0 overflow-auto code-scroll">
       <pre
         className="font-mono text-[12px] leading-[1.7] p-4 text-[#ABB2BF] select-text"
         style={maxHeight ? { maxHeight } : undefined}
