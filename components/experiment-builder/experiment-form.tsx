@@ -86,7 +86,7 @@ export function ExperimentBuilder() {
       ...(needsTarget ? { target_id: PRESET_TARGETS[targetIdx].id } : {}),
       sequences: sequences.length > 0
         ? sequencesMap
-        : { "seq_1": "EVQLVESGGGLVQPGG..." },
+        : { "<name>": "<amino_acid_sequence>" },
       n_replicates: 1,
     },
   };
@@ -97,7 +97,6 @@ export function ExperimentBuilder() {
       number={2}
       title="Create an Experiment"
       description="Build an experiment step by step: pick a type, select a target, add sequences, and submit to the lab."
-      isLive={false}
       left={
         <div className="space-y-5">
           {/* Experiment Type */}
@@ -247,9 +246,12 @@ export function ExperimentBuilder() {
                               )}
                             </span>
                           </td>
-                          <td className="px-3 py-1.5 font-mono text-muted-foreground truncate max-w-0">
-                            <span className="block truncate">
-                              {seq.sequence.slice(0, 40)}...
+                          <td className="px-3 py-1.5 font-mono text-muted-foreground max-w-0">
+                            <span
+                              className="block overflow-x-auto whitespace-nowrap text-[10px] cursor-text select-all scrollbar-thin"
+                              title="Click to select, then copy"
+                            >
+                              {seq.sequence}
                             </span>
                           </td>
                           <td className="px-1">

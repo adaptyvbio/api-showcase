@@ -134,7 +134,6 @@ export function LifecycleViewer() {
       number={4}
       title="Track Progress"
       description="Subscribe to experiment updates via API or webhooks. Watch a complete experiment lifecycle unfold in real time."
-      isLive={false}
       left={
         <div className="space-y-4">
           {/* Timeline */}

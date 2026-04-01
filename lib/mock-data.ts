@@ -41,17 +41,17 @@ export const EXPERIMENT_TYPES: ExperimentType[] = [
   {
     type: "screening",
     label: "Binding Screening",
-    description: "Screen your sequences against a target protein. Identify which candidates bind and rank them by binding strength.",
+    description: "Screen your sequences against a target protein via BLI or SPR. Identify which candidates bind, rank them by strength, and get KD values from two-concentration binding.",
     requiresTarget: true,
-    methods: ["bli", "spr"],
-    dataReturned: "Binding yes/no, qualitative strength, approximate KD",
+    methods: [],
+    dataReturned: "Binding yes/no, qualitative strength, KD values",
   },
   {
     type: "affinity",
     label: "Affinity Characterization",
-    description: "Measure precise binding kinetics for your best candidates. Get full kinetic curves with KD, kon, and koff values.",
+    description: "Measure precise binding kinetics via BLI or SPR for your best candidates. Get full kinetic curves with KD, kon, and koff values.",
     requiresTarget: true,
-    methods: ["bli", "spr"],
+    methods: [],
     dataReturned: "KD, kon, koff, sensorgrams, curve fits",
   },
   {

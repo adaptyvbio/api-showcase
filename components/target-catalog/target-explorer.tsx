@@ -214,7 +214,6 @@ export function TargetExplorer() {
       number={3}
       title="Browse Target Proteins"
       description="Help your users find the right protein target to test against."
-      isLive
       left={
         <div className="space-y-4">
           <div className="relative">

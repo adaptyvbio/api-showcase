@@ -8,7 +8,6 @@ interface ExampleBlockProps {
   number: number;
   title: string;
   description: string;
-  isLive: boolean;
   left: React.ReactNode;
   right: React.ReactNode;
 }
@@ -18,7 +17,6 @@ export function ExampleBlock({
   number,
   title,
   description,
-  isLive,
   left,
   right,
 }: ExampleBlockProps) {
@@ -36,16 +34,6 @@ export function ExampleBlock({
             <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground leading-tight">
               {title}
             </h2>
-            {isLive ? (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.20)]">
-                <span className="w-1 h-1 rounded-sm bg-[#22C55E] pulse-dot" />
-                Live
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(245,158,11,0.10)] text-[#F59E0B] border border-[rgba(245,158,11,0.20)]">
-                Mock
-              </span>
-            )}
           </div>
           <p className="mt-2 text-[15px] text-foreground/60 max-w-[540px] leading-relaxed tracking-[-0.005em]">
             {description}

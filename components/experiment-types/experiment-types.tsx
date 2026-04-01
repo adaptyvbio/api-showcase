@@ -24,13 +24,7 @@ const TYPE_ICONS: Record<string, typeof FlaskConical> = {
   fluorescence: Sparkles,
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  expression: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  screening: "bg-accent-blue/10 text-accent-blue border-accent-blue/20",
-  affinity: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-  thermostability: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-  fluorescence: "bg-pink-500/10 text-pink-500 border-pink-500/20",
-};
+const ICON_COLOR = "bg-accent-blue/10 text-accent-blue border-accent-blue/20";
 
 export function ExperimentTypesSection() {
   const [selectedType, setSelectedType] = useState(EXPERIMENT_TYPES[1]); // Default to screening
@@ -41,13 +35,11 @@ export function ExperimentTypesSection() {
       number={1}
       title="Experiment Types"
       description="Choose from 5 assay types covering expression, binding, kinetics, and biophysical characterization."
-      isLive={false}
       left={
         <div className="space-y-3">
           {EXPERIMENT_TYPES.map((et) => {
             const Icon = TYPE_ICONS[et.type] ?? FlaskConical;
             const isSelected = selectedType.type === et.type;
-            const colorClasses = TYPE_COLORS[et.type] ?? "";
 
             return (
               <button
@@ -64,7 +56,7 @@ export function ExperimentTypesSection() {
                   <div
                     className={cn(
                       "w-8 h-8 rounded-sm flex items-center justify-center shrink-0 border",
-                      colorClasses
+                      ICON_COLOR
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -81,14 +73,6 @@ export function ExperimentTypesSection() {
                         >
                           <Target className="w-2.5 h-2.5" />
                           Target
-                        </Badge>
-                      )}
-                      {et.methods.length > 0 && (
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] font-mono uppercase"
-                        >
-                          {et.methods.join(" / ")}
                         </Badge>
                       )}
                     </div>
@@ -114,25 +98,19 @@ export function ExperimentTypesSection() {
       }
       right={
         <ApiPanel
-          method="POST"
-          endpoint="/experiments"
-          requestBody={{
-            experiment_spec: {
-              experiment_type: selectedType.type,
-              ...(selectedType.methods.length > 0
-                ? { method: selectedType.methods[0] }
-                : {}),
-              ...(selectedType.requiresTarget
-                ? { target_id: "<target_uuid>" }
-                : {}),
-              sequences: {
-                "seq_1": "EVQLVESGGGLVQPGG...",
-                "seq_2": "DIQMTQSPSSLSASVG...",
-              },
-              n_replicates: 1,
-            },
+          method="GET"
+          endpoint="/experiment-types"
+          response={{
+            items: EXPERIMENT_TYPES.map((et) => ({
+              type: et.type,
+              label: et.label,
+              description: et.description,
+              requires_target: et.requiresTarget,
+              data_returned: et.dataReturned,
+            })),
           }}
-          activeTab="request"
+          responseStatus={200}
+          activeTab="response"
         />
       }
     />

@@ -171,7 +171,6 @@ export function ResultsViewer() {
       number={5}
       title="View Results"
       description="Retrieve binding data programmatically. 20 VHH sequences screened against HER2 with full kinetic data."
-      isLive={false}
       left={
         <div className="space-y-4">
           {/* Stats summary */}
