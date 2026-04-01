@@ -1,82 +1,105 @@
+import Image from "next/image";
+
+const NAV_LINKS = [
+  { label: "Services", href: "https://start.adaptyvbio.com" },
+  { label: "Blog", href: "https://adaptyvbio.com/blog" },
+  { label: "Team", href: "https://adaptyvbio.com/team" },
+  { label: "Careers", href: "https://adaptyvbio.com/careers" },
+];
+
+const DOC_LINKS = [
+  { label: "Docs", href: "https://docs.adaptyvbio.com" },
+  { label: "API", href: "https://docs.adaptyvbio.com/api-reference/api-introduction" },
+  { label: "Privacy Policy", href: "https://adaptyvbio.com/privacy" },
+  { label: "Terms & Conditions", href: "https://adaptyvbio.com/terms" },
+];
+
 export function Footer() {
   return (
-    <footer className="py-16 border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div>
-            <span className="text-foreground font-semibold text-lg tracking-tight">
-              Adaptyv
-            </span>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Protein binding assays as a service. From design to data, powered
-              by an API.
-            </p>
+    <footer className="relative bg-[#142933] text-white overflow-hidden">
+      {/* Watermark logo */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <span className="text-[12vw] font-bold tracking-tight text-white/[0.03] whitespace-nowrap">
+          Adaptyv
+        </span>
+      </div>
+
+      <div className="relative border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-5 lg:px-[60px] py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+            {/* Column 1 — Brand + Contact */}
+            <div>
+              <Image
+                src="/logos/adaptyv-white.svg"
+                alt="Adaptyv Bio"
+                width={120}
+                height={20}
+                className="mb-4 opacity-90"
+              />
+              <p className="text-sm text-white/40 leading-relaxed">
+                &copy; {new Date().getFullYear()} — Adaptyv Biosystems
+              </p>
+              <p className="text-sm text-white/40 mt-4">For all questions:</p>
+              <a
+                href="mailto:support@adaptyvbio.com"
+                className="text-sm text-accent-blue hover:text-white transition-colors"
+              >
+                support@adaptyvbio.com
+              </a>
+            </div>
+
+            {/* Column 2 — Nav */}
+            <div>
+              <ul className="space-y-2.5">
+                {NAV_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-white/50 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3 — Docs & Legal */}
+            <div>
+              <ul className="space-y-2.5">
+                {DOC_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-white/50 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 4 — Address */}
+            <div>
+              <a
+                href="https://maps.google.com/?q=Route+de+la+Corniche+5+1066+Epalinges+Switzerland"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/50 hover:text-white transition-colors leading-relaxed block"
+              >
+                Biopole Life Science Campus
+                <br />
+                Route de la Corniche 5, 1066 Epalinges
+                <br />
+                Lausanne, Switzerland
+              </a>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">
-              Developers
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://docs.adaptyvbio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
-                >
-                  API Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.adaptyvbio.com/reference"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
-                >
-                  API Reference
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.adaptyvbio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
-                >
-                  Status
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">
-              Company
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://adaptyvbio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:contact@adaptyvbio.com"
-                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
-                >
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-12 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} Adaptyv Bio. All rights reserved.
         </div>
       </div>
     </footer>
