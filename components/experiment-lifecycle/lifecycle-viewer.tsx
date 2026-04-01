@@ -57,14 +57,17 @@ export function LifecycleViewer() {
   const [isManual, setIsManual] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const hasTriggered = useRef(false);
 
-  // Auto-start when section scrolls into view
+  // Auto-start once when section scrolls into view (fires only once)
   useEffect(() => {
+    if (hasTriggered.current) return;
     const el = sectionRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isManual) {
+        if (entry.isIntersecting && !hasTriggered.current) {
+          hasTriggered.current = true;
           setIsPlaying(true);
           observer.disconnect();
         }
@@ -73,7 +76,7 @@ export function LifecycleViewer() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isManual]);
+  }, []);
 
   // Auto-advance timer — loops back to start when done
   useEffect(() => {
