@@ -7,10 +7,18 @@ export async function GET(request: NextRequest) {
   const search = request.nextUrl.searchParams.get("search") ?? "";
   const url = `${API_URL}/targets?search=${encodeURIComponent(search)}&selfservice_only=true&limit=6`;
 
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${API_TOKEN}` },
-  });
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+      signal: AbortSignal.timeout(8000),
+    });
 
-  const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
+  } catch {
+    return NextResponse.json(
+      { items: [], total: 0, count: 0, offset: 0, error: "API timeout" },
+      { status: 504 }
+    );
+  }
 }
