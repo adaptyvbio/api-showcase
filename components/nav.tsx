@@ -1,35 +1,34 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
-const NAV_ITEMS = [
-  { id: "targets", label: "Targets" },
-  { id: "builder", label: "Builder" },
-  { id: "cost", label: "Cost" },
-  { id: "lifecycle", label: "Lifecycle" },
-  { id: "results", label: "Results" },
-  { id: "assistant", label: "AI" },
+const SECTIONS = [
+  { id: "browse-targets", label: "Browse Targets" },
+  { id: "create-experiment", label: "Create Experiment" },
+  { id: "get-a-quote", label: "Get a Quote" },
+  { id: "track-progress", label: "Track Progress" },
+  { id: "view-results", label: "View Results" },
+  { id: "ai-assistant", label: "AI Assistant" },
 ];
 
 export function Nav() {
-  const [active, setActive] = useState("");
+  const [activeSection, setActiveSection] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length > 0) {
-          setActive(visible[0].target.id);
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
         }
       },
-      { rootMargin: "-80px 0px -60% 0px", threshold: 0 }
+      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
     );
 
-    NAV_ITEMS.forEach(({ id }) => {
+    SECTIONS.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
@@ -37,48 +36,81 @@ export function Nav() {
     return () => observer.disconnect();
   }, []);
 
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+    setMobileOpen(false);
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 nav-frosted border-b border-border/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center h-14">
-        {/* Logo */}
-        <a href="#" className="flex items-center gap-2 mr-8">
-          <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
-            <span className="text-background text-xs font-bold">A</span>
-          </div>
-          <span className="font-semibold text-sm tracking-tight hidden sm:block">
-            Adaptyv
-          </span>
+    <nav className="sticky top-0 z-50 h-16 nav-frosted border-b border-border">
+      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <a href="#" className="text-foreground font-semibold text-lg tracking-tight">
+          Adaptyv
         </a>
 
-        {/* Nav links */}
-        <nav className="flex items-center gap-1">
-          {NAV_ITEMS.map(({ id, label }) => (
-            <a
+        <div className="hidden lg:flex items-center gap-8">
+          {SECTIONS.map(({ id, label }) => (
+            <button
               key={id}
-              href={`#${id}`}
-              className={cn(
-                "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
-                active === id
-                  ? "text-foreground bg-accent"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
+              onClick={() => scrollTo(id)}
+              className={`text-sm font-medium transition-colors duration-150 pb-0.5 border-b-2 ${
+                activeSection === id
+                  ? "text-foreground border-[#0070F3]"
+                  : "text-muted-foreground border-transparent hover:text-foreground"
+              }`}
             >
               {label}
-            </a>
+            </button>
           ))}
-        </nav>
+        </div>
 
-        {/* CTA */}
-        <a
-          href="https://docs.adaptyvbio.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-accent-blue text-white hover:bg-accent-blue-hover transition-colors"
-        >
-          View API Docs
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="https://docs.adaptyvbio.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex h-9 px-4 items-center rounded-lg bg-[#0070F3] text-white text-sm font-medium hover:bg-[#005CC8] transition-colors duration-150"
+          >
+            Explore API Docs
+          </a>
+
+          <button
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
-    </header>
+
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-b border-border shadow-lg">
+          {SECTIONS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => scrollTo(id)}
+              className="block w-full text-left px-6 py-3 text-base text-foreground hover:bg-muted transition-colors"
+            >
+              {label}
+            </button>
+          ))}
+          <div className="px-6 py-3 border-t border-border">
+            <a
+              href="https://docs.adaptyvbio.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 px-4 items-center rounded-lg bg-[#0070F3] text-white text-sm font-medium"
+            >
+              Explore API Docs
+            </a>
+          </div>
+        </div>
+      )}
+    </nav>
   );
 }

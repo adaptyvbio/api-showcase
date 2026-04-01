@@ -1,44 +1,57 @@
-"use client";
-
-import { ArrowRight, ExternalLink } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
 export function Hero() {
   return (
-    <section className="pt-32 pb-20 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-card text-xs font-medium text-muted-foreground mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-success pulse-dot" />
-          Live API Demo
-        </div>
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-4">
-          Adaptyv API Showcase
+    <section className="relative py-16 md:py-24 lg:py-32">
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        aria-hidden="true"
+      >
+        <div
+          className="w-[600px] h-[400px] rounded-full opacity-80"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(0, 112, 243, 0.04) 0%, transparent 70%)",
+          }}
+        />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3rem] font-bold tracking-[-0.04em] text-foreground leading-[1.1]">
+          Let your users test their protein designs in a real lab
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
-          Explore the Foundry API with interactive examples. Search protein
-          targets, estimate costs, track experiments, and view binding results
-          — all with live API calls and real-time JSON.
+        <p className="mt-4 text-base sm:text-lg md:text-[1.25rem] text-[#3C4257] max-w-[520px] mx-auto leading-relaxed tracking-[-0.01em]">
+          The Adaptyv API connects your computational design platform to our wet
+          lab. Your users design proteins — we test them. Binding data in weeks,
+          not months.
         </p>
-        <div className="flex items-center justify-center gap-3">
+
+        <div className="mt-10 flex items-center justify-center gap-8">
+          <span className="text-sm text-muted-foreground font-medium opacity-60 tracking-tight">
+            Tamarind Bio
+          </span>
+          <span className="text-sm text-muted-foreground font-medium opacity-60 tracking-tight">
+            Phylo
+          </span>
+          <span className="text-sm text-muted-foreground italic opacity-40">
+            and others
+          </span>
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-3">
           <a
-            href="#targets"
-            className={cn(
-              buttonVariants(),
-              "bg-accent-blue hover:bg-accent-blue-hover text-white"
-            )}
+            href="https://docs.adaptyvbio.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-10 px-5 inline-flex items-center rounded-lg bg-[#0070F3] text-white text-sm font-medium hover:bg-[#005CC8] transition-colors duration-150 tracking-[-0.005em]"
           >
-            Explore Examples
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            Explore API Docs
           </a>
           <a
             href="https://docs.adaptyvbio.com"
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(buttonVariants({ variant: "outline" }))}
+            className="h-10 px-5 inline-flex items-center rounded-lg border border-border text-[#3C4257] text-sm font-medium hover:bg-[#F4F4F5] hover:border-[#D4D4D8] transition-colors duration-150 tracking-[-0.005em]"
           >
-            API Docs
-            <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+            View on GitHub
           </a>
         </div>
       </div>

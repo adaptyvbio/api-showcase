@@ -139,6 +139,20 @@
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.04) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
 /* Code panel scrollbar */
 .code-scroll::-webkit-scrollbar {
   width: 6px;
