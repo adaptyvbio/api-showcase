@@ -32,7 +32,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; ring: string }> 
   draft: { bg: "bg-muted", text: "text-muted-foreground", ring: "ring-border" },
   waiting_for_confirmation: { bg: "bg-amber-500/10", text: "text-amber-500", ring: "ring-amber-500/30" },
   waiting_for_materials: { bg: "bg-orange-500/10", text: "text-orange-500", ring: "ring-orange-500/30" },
-  in_production: { bg: "bg-blue-500/10", text: "text-blue-500", ring: "ring-blue-500/30" },
+  in_production: { bg: "bg-accent-blue/10", text: "text-accent-blue", ring: "ring-accent-blue/30" },
   data_analysis: { bg: "bg-purple-500/10", text: "text-purple-500", ring: "ring-purple-500/30" },
   in_review: { bg: "bg-cyan-500/10", text: "text-cyan-500", ring: "ring-cyan-500/30" },
   done: { bg: "bg-success/10", text: "text-success", ring: "ring-success/30" },

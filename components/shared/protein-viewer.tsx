@@ -170,11 +170,11 @@ export function ProteinViewer({
         {
           cartoon: {
             colorfunc: (atom: { resi: number }) => {
-              // Blue gradient based on residue position
+              // Gradient centered on Adaptyv blue (#36B7F6)
               const t = (atom.resi % 120) / 120;
-              const r = Math.round(20 + t * 40);
-              const g = Math.round(80 + t * 100);
-              const b = Math.round(180 + t * 75);
+              const r = Math.round(30 + t * 50);
+              const g = Math.round(140 + t * 70);
+              const b = Math.round(220 + t * 35);
               return `rgb(${r},${g},${b})`;
             },
             opacity: 1.0,
@@ -187,7 +187,7 @@ export function ProteinViewer({
         "VDW",
         {
           opacity: 0.12,
-          color: "#3b82f6",
+          color: "#36B7F6",
         },
         {},
         {}
@@ -226,7 +226,7 @@ export function ProteinViewer({
     if (showSurface) {
       viewer.addSurface(
         "VDW",
-        { opacity: 0.12, color: "#3b82f6" },
+        { opacity: 0.12, color: "#36B7F6" },
         {},
         {}
       );
