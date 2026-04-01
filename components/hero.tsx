@@ -172,7 +172,7 @@ export function Hero() {
             Explore Examples
           </a>
           <a
-            href="https://docs.adaptyvbio.com"
+            href="https://docs.adaptyvbio.com/api-reference/api-introduction"
             target="_blank"
             rel="noopener noreferrer"
             className="h-11 px-6 inline-flex items-center rounded-sm border border-border text-foreground/60 text-sm font-medium hover:bg-muted hover:border-border transition-colors duration-150 tracking-[-0.005em]"

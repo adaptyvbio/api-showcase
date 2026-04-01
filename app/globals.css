@@ -48,9 +48,9 @@
   --radius-4xl: var(--radius);
 
   /* Design spec custom tokens */
-  --color-accent-blue: #0099ff;
-  --color-accent-blue-hover: #007acc;
-  --color-accent-blue-muted: rgba(0, 153, 255, 0.08);
+  --color-accent-blue: #36B7F6;
+  --color-accent-blue-hover: #1A9FDE;
+  --color-accent-blue-muted: rgba(54, 183, 246, 0.08);
   --color-success: #22C55E;
   --color-success-muted: rgba(34, 197, 94, 0.10);
   --color-warning: #FFBB00;
@@ -63,7 +63,7 @@
   --color-code-hover: #444444;
 
   --color-binding-strong: #22C55E;
-  --color-binding-medium: #0099ff;
+  --color-binding-medium: #36B7F6;
   --color-binding-weak: #FFBB00;
   --color-binding-non: #6B7280;
 }
@@ -75,7 +75,7 @@
   --card-foreground: #222222;
   --popover: #FFFFFF;
   --popover-foreground: #222222;
-  --primary: #0099ff;
+  --primary: #36B7F6;
   --primary-foreground: #FFFFFF;
   --secondary: #f3f3f3;
   --secondary-foreground: #333333;
@@ -86,8 +86,8 @@
   --destructive: #EF4444;
   --border: #eeeeee;
   --input: #eeeeee;
-  --ring: #0099ff;
-  --chart-1: #0099ff;
+  --ring: #36B7F6;
+  --chart-1: #36B7F6;
   --chart-2: #22C55E;
   --chart-3: #FFBB00;
   --chart-4: #8855ff;
@@ -95,12 +95,12 @@
   --radius: 2px;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #222222;
-  --sidebar-primary: #0099ff;
+  --sidebar-primary: #36B7F6;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #f3f3f3;
   --sidebar-accent-foreground: #333333;
   --sidebar-border: #eeeeee;
-  --sidebar-ring: #0099ff;
+  --sidebar-ring: #36B7F6;
 }
 
 @layer base {
