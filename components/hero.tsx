@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // Codon table: each amino acid maps to its most common codon
 const AA_TO_CODON: Record<string, string> = {
@@ -44,6 +44,77 @@ function SequenceChip() {
   );
 }
 
+const PHRASES = ["your users", "AI agents"] as const;
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+function FlipWord() {
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [display, setDisplay] = useState<string>(PHRASES[0]);
+  const [isFlipping, setIsFlipping] = useState(false);
+
+  const flip = useCallback(() => {
+    if (isFlipping) return;
+    setIsFlipping(true);
+
+    const nextIdx = (phraseIdx + 1) % PHRASES.length;
+    const target = PHRASES[nextIdx];
+    const maxLen = Math.max(display.length, target.length);
+    let step = 0;
+    const totalSteps = maxLen + 4; // extra scramble steps
+
+    const interval = setInterval(() => {
+      step++;
+      const revealed = Math.max(0, step - 4); // delay reveal by 4 scramble frames
+      const chars = [];
+
+      for (let i = 0; i < target.length; i++) {
+        if (i < revealed) {
+          chars.push(target[i]);
+        } else {
+          chars.push(
+            target[i] === " "
+              ? " "
+              : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+          );
+        }
+      }
+
+      setDisplay(chars.join(""));
+
+      if (step >= totalSteps) {
+        clearInterval(interval);
+        setDisplay(target);
+        setPhraseIdx(nextIdx);
+        setIsFlipping(false);
+      }
+    }, 50);
+  }, [phraseIdx, display.length, isFlipping]);
+
+  useEffect(() => {
+    const timer = setInterval(flip, 4000);
+    return () => clearInterval(timer);
+  }, [flip]);
+
+  return (
+    <span className="inline-block min-w-[8ch] text-left">
+      {display.split("").map((char, i) => (
+        <span
+          key={`${i}-${char}`}
+          className="inline-block transition-colors duration-150"
+          style={{
+            color:
+              char !== PHRASES[phraseIdx][i]
+                ? "var(--color-accent-blue)"
+                : "inherit",
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function Hero() {
   return (
     <section className="relative py-20 md:py-28 lg:py-36">
@@ -52,7 +123,7 @@ export function Hero() {
         <SequenceChip />
 
         <h1 className="text-[2rem] sm:text-[2.5rem] md:text-[3.25rem] lg:text-[3.75rem] font-bold tracking-[-0.045em] text-foreground leading-[1.05]">
-          Let your users test
+          Let <FlipWord /> test
           <br className="hidden sm:block" /> protein designs{" "}
           <span className="text-accent-blue">in a real lab</span>
         </h1>
