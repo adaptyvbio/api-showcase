@@ -47,7 +47,7 @@ export function ApiPanel({
   isLoading = false,
   activeTab,
   onTabChange,
-  baseUrl = "https://api.adaptyvbio.com/v1",
+  baseUrl = "https://agents.adaptyvbio.com/v1",
   autoScroll = false,
 }: ApiPanelProps) {
   const [headersOpen, setHeadersOpen] = useState(false);
