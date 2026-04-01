@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 export function Hero() {
   return (
     <section className="relative py-20 md:py-28 lg:py-36">
@@ -14,16 +16,29 @@ export function Hero() {
           not months.
         </p>
 
-        <div className="mt-10 flex items-center justify-center gap-8">
-          <span className="text-sm text-muted-foreground font-medium tracking-tight">
-            Tamarind Bio
-          </span>
-          <span className="text-sm text-muted-foreground font-medium tracking-tight">
-            Phylo
-          </span>
+        {/* Customer logos */}
+        <div className="mt-12">
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-[0.08em] mb-5">
+            Try out via
+          </p>
+          <div className="flex items-center justify-center gap-10">
+            <img
+              src="/logos/tamarind.svg"
+              alt="Tamarind Bio"
+              className="h-6 opacity-40 hover:opacity-70 transition-opacity duration-200"
+            />
+            <img
+              src="/logos/phylo.svg"
+              alt="Phylo Bio"
+              className="h-5 opacity-40 hover:opacity-70 transition-opacity duration-200"
+            />
+            <span className="text-sm text-muted-foreground/50 italic">
+              more launching soon
+            </span>
+          </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-3">
+        <div className="mt-10 flex items-center justify-center gap-3">
           <a
             href="#browse-targets"
             className="h-11 px-6 inline-flex items-center rounded-lg bg-[#0070F3] text-white text-sm font-semibold hover:bg-[#005CC8] transition-colors duration-150 tracking-[-0.005em]"
