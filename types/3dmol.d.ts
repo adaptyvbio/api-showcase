@@ -7,6 +7,7 @@ declare module "3dmol" {
   interface StyleSpec {
     cartoon?: {
       color?: string;
+      colorfunc?: (atom: { resi: number; elem: string; chain: string }) => string;
       opacity?: number;
     };
     stick?: {
@@ -18,9 +19,16 @@ declare module "3dmol" {
     };
   }
 
+  interface SurfaceStyleSpec {
+    opacity?: number;
+    color?: string;
+    colorscheme?: string;
+  }
+
   interface GLViewer {
     addModel(data: string, format: string): void;
     setStyle(sel: object, style: StyleSpec): void;
+    addSurface(type: string, style: SurfaceStyleSpec, sel?: object, allsel?: object): void;
     zoomTo(): void;
     render(): void;
     spin(axis: string | false, speed?: number): void;

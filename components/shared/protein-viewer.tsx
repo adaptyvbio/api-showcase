@@ -135,19 +135,39 @@ export function ProteinViewer({
       containerRef.current.innerHTML = "";
 
       const viewer = $3Dmol.createViewer(containerRef.current, {
-        backgroundColor: "transparent",
+        backgroundColor: "#0a0f1a",
         antialias: true,
       });
 
       viewer.addModel(structurePayload.data, structurePayload.format);
+
+      // Cartoon in Adaptyv blue tones
       viewer.setStyle(
         {},
         {
           cartoon: {
-            color: "spectrum",
-            opacity: 0.95,
+            colorfunc: (atom: { resi: number }) => {
+              // Blue gradient based on residue position
+              const t = (atom.resi % 120) / 120;
+              const r = Math.round(20 + t * 40);
+              const g = Math.round(80 + t * 100);
+              const b = Math.round(180 + t * 75);
+              return `rgb(${r},${g},${b})`;
+            },
+            opacity: 1.0,
           },
         }
+      );
+
+      // Semi-transparent molecular surface
+      viewer.addSurface(
+        "VDW",
+        {
+          opacity: 0.12,
+          color: "#3b82f6",
+        },
+        {},
+        {}
       );
 
       viewer.zoomTo();
@@ -198,27 +218,30 @@ export function ProteinViewer({
       className={`relative rounded-lg overflow-hidden ${className}`}
       style={{ height, minHeight: height }}
     >
-      {/* Light background */}
-      <div className="absolute inset-0 bg-muted" />
+      {/* Dark background matching 3Dmol */}
+      <div className="absolute inset-0 bg-[#0a0f1a]" />
 
       {/* 3Dmol container */}
       <div
         ref={containerRef}
         className="absolute inset-0 z-10"
-        style={{ cursor: size === "lg" ? "grab" : "default" }}
+        style={{
+          cursor: size === "lg" ? "grab" : "default",
+          pointerEvents: size === "sm" ? "none" : "auto",
+        }}
       />
 
       {/* Loading state */}
       {status === "loading" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-[#E4E4E7] border-t-accent-blue rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-white/10 border-t-blue-400 rounded-full animate-spin" />
         </div>
       )}
 
       {/* Error state */}
       {status === "error" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="text-[10px] font-mono text-muted-foreground">
+          <div className="text-[10px] font-mono text-white/30">
             No structure
           </div>
         </div>
@@ -226,7 +249,7 @@ export function ProteinViewer({
 
       {/* Source label */}
       {status === "ready" && structureSource && (
-        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-card text-[10px] font-mono text-muted-foreground">
+        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white/40">
           {structureSource}
         </div>
       )}
