@@ -8,7 +8,6 @@ import {
   Upload,
   Sparkles,
   X,
-  FileText,
   CheckCircle2,
   Target,
 } from "lucide-react";
@@ -80,20 +79,17 @@ export function ExperimentBuilder() {
     return map;
   }, [sequences]);
 
-  const requestPayload = useMemo(
-    () => ({
-      experiment_spec: {
-        experiment_type: experimentType,
-        ...(hasMethods ? { method } : {}),
-        ...(needsTarget ? { target_id: PRESET_TARGETS[targetIdx].id } : {}),
-        sequences: sequences.length > 0
-          ? sequencesMap
-          : { "seq_1": "EVQLVESGGGLVQPGG..." },
-        n_replicates: 1,
-      },
-    }),
-    [experimentType, method, needsTarget, hasMethods, targetIdx, sequences, sequencesMap]
-  );
+  const requestPayload = {
+    experiment_spec: {
+      experiment_type: experimentType,
+      ...(hasMethods ? { method } : {}),
+      ...(needsTarget ? { target_id: PRESET_TARGETS[targetIdx].id } : {}),
+      sequences: sequences.length > 0
+        ? sequencesMap
+        : { "seq_1": "EVQLVESGGGLVQPGG..." },
+      n_replicates: 1,
+    },
+  };
 
   return (
     <ExampleBlock

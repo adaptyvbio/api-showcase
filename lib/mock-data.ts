@@ -1,4 +1,4 @@
-import type { ExperimentInfo, AffinityResult } from "./api-types";
+import type { AffinityResult } from "./api-types";
 
 // ─── Consistent Demo Data Model ───────────────────────────────────────────
 // All sections reference the same experiment for coherence:

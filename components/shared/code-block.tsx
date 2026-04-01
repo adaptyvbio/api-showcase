@@ -11,19 +11,21 @@ function esc(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\t/g, "\\t");
 }
 
-function renderJson(value: unknown, indent = 0): React.ReactNode[] {
+function renderJson(value: unknown, indent = 0, path = "root"): React.ReactNode[] {
   const pad = "  ".repeat(indent);
   const inner = "  ".repeat(indent + 1);
 
-  if (value === null) return [<span className="text-[#56B6C2]">null</span>];
+  if (value === null) {
+    return [<span key={`${path}-null`} className="text-[#56B6C2]">null</span>];
+  }
   if (typeof value === "boolean")
-    return [<span className="text-[#56B6C2]">{String(value)}</span>];
+    return [<span key={`${path}-bool`} className="text-[#56B6C2]">{String(value)}</span>];
   if (typeof value === "number")
-    return [<span className="text-[#D19A66]">{String(value)}</span>];
+    return [<span key={`${path}-number`} className="text-[#D19A66]">{String(value)}</span>];
   if (typeof value === "string") {
     const display = value.length > 120 ? value.slice(0, 117) + "..." : value;
     return [
-      <span className="text-[#98C379]">
+      <span key={`${path}-string`} className="text-[#98C379]">
         &quot;{esc(display)}&quot;
       </span>,
     ];
@@ -31,37 +33,37 @@ function renderJson(value: unknown, indent = 0): React.ReactNode[] {
 
   if (Array.isArray(value)) {
     if (value.length === 0)
-      return [<span className="text-[#636D83]">[]</span>];
+      return [<span key={`${path}-empty-array`} className="text-[#636D83]">[]</span>];
     const nodes: React.ReactNode[] = [];
-    nodes.push(<span className="text-[#636D83]">[</span>, "\n");
+    nodes.push(<span key={`${path}-open-array`} className="text-[#636D83]">[</span>, "\n");
     value.forEach((item, i) => {
-      nodes.push(inner, ...renderJson(item, indent + 1));
+      nodes.push(inner, ...renderJson(item, indent + 1, `${path}.${i}`));
       if (i < value.length - 1)
-        nodes.push(<span className="text-[#636D83]">,</span>);
+        nodes.push(<span key={`${path}.${i}-comma`} className="text-[#636D83]">,</span>);
       nodes.push("\n");
     });
-    nodes.push(pad, <span className="text-[#636D83]">]</span>);
+    nodes.push(pad, <span key={`${path}-close-array`} className="text-[#636D83]">]</span>);
     return nodes;
   }
 
   if (typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>);
     if (entries.length === 0)
-      return [<span className="text-[#636D83]">{"{}"}</span>];
+      return [<span key={`${path}-empty-object`} className="text-[#636D83]">{"{}"}</span>];
     const nodes: React.ReactNode[] = [];
-    nodes.push(<span className="text-[#636D83]">{"{"}</span>, "\n");
+    nodes.push(<span key={`${path}-open-object`} className="text-[#636D83]">{"{"}</span>, "\n");
     entries.forEach(([key, val], i) => {
       nodes.push(
         inner,
-        <span className="text-[#E06C75]">&quot;{key}&quot;</span>,
-        <span className="text-[#636D83]">: </span>,
-        ...renderJson(val, indent + 1)
+        <span key={`${path}.${key}-key`} className="text-[#E06C75]">&quot;{key}&quot;</span>,
+        <span key={`${path}.${key}-colon`} className="text-[#636D83]">: </span>,
+        ...renderJson(val, indent + 1, `${path}.${key}`)
       );
       if (i < entries.length - 1)
-        nodes.push(<span className="text-[#636D83]">,</span>);
+        nodes.push(<span key={`${path}.${key}-comma`} className="text-[#636D83]">,</span>);
       nodes.push("\n");
     });
-    nodes.push(pad, <span className="text-[#636D83]">{"}"}</span>);
+    nodes.push(pad, <span key={`${path}-close-object`} className="text-[#636D83]">{"}"}</span>);
     return nodes;
   }
 

@@ -22,7 +22,6 @@ import {
 } from "@/lib/mock-data";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
-import type { AffinityResult } from "@/lib/api-types";
 
 const BINDING_COLORS: Record<string, string> = {
   strong: "bg-binding-strong",
@@ -50,6 +49,22 @@ function getBarWidth(kd: number | null): number {
 
 type SortKey = "name" | "kd" | "binding_strength";
 type SortDir = "asc" | "desc";
+
+function renderSortIcon(
+  activeSortKey: SortKey,
+  activeSortDir: SortDir,
+  col: SortKey
+) {
+  if (activeSortKey !== col) {
+    return null;
+  }
+
+  return activeSortDir === "asc" ? (
+    <ChevronUp className="w-3 h-3 inline ml-0.5" />
+  ) : (
+    <ChevronDown className="w-3 h-3 inline ml-0.5" />
+  );
+}
 
 function generateCsv(): string {
   const headers = [
@@ -127,15 +142,6 @@ export function ResultsViewer() {
       setSortKey(key);
       setSortDir("asc");
     }
-  };
-
-  const SortIcon = ({ col }: { col: SortKey }) => {
-    if (sortKey !== col) return null;
-    return sortDir === "asc" ? (
-      <ChevronUp className="w-3 h-3 inline ml-0.5" />
-    ) : (
-      <ChevronDown className="w-3 h-3 inline ml-0.5" />
-    );
   };
 
   // Stats summary
@@ -352,13 +358,13 @@ export function ResultsViewer() {
                             onClick={() => handleSort("name")}
                             className="text-left px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                           >
-                            Name <SortIcon col="name" />
+                            Name {renderSortIcon(sortKey, sortDir, "name")}
                           </th>
                           <th
                             onClick={() => handleSort("kd")}
                             className="text-right px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                           >
-                            KD <SortIcon col="kd" />
+                            KD {renderSortIcon(sortKey, sortDir, "kd")}
                           </th>
                           <th className="text-right px-3 py-2 font-medium text-muted-foreground">
                             k_on
@@ -373,7 +379,7 @@ export function ResultsViewer() {
                             onClick={() => handleSort("binding_strength")}
                             className="text-left px-3 py-2 font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                           >
-                            Binding <SortIcon col="binding_strength" />
+                            Binding {renderSortIcon(sortKey, sortDir, "binding_strength")}
                           </th>
                         </tr>
                       </thead>
