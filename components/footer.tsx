@@ -16,15 +16,8 @@ const DOC_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-[#142933] text-white overflow-hidden">
-      {/* Watermark logo */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-        <span className="text-[12vw] font-bold tracking-tight text-white/[0.03] whitespace-nowrap">
-          Adaptyv
-        </span>
-      </div>
-
-      <div className="relative border-t border-white/10">
+    <footer className="bg-[#142933] text-white">
+      <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-5 lg:px-[60px] py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
             {/* Column 1 — Brand + Contact */}
