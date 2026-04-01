@@ -70,7 +70,7 @@ git clone https://github.com/adaptyvbio/api-showcase.git
 cd api-showcase
 
 # Install
-pnpm install
+bun install
 
 # Set up env vars (pull from Doppler or create manually)
 doppler secrets download -p api-showcase -c dev --no-file --format env > .env.local

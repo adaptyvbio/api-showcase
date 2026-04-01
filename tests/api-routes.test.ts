@@ -77,6 +77,60 @@ describe("API routes", () => {
     });
   });
 
+  it("falls back to local targets when the upstream target search returns a 5xx", async () => {
+    process.env.ADAPTYV_API_URL = "https://example.com/v1";
+    process.env.ADAPTYV_API_TOKEN = "demo-token";
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ error: "upstream failed" }), {
+          status: 503,
+          headers: {
+            "content-type": "application/json",
+          },
+        })
+      )
+    );
+
+    const response = await getTargets(
+      new NextRequest("http://localhost/api/targets?search=HER2")
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.meta).toEqual({ source: "fallback" });
+    expect(json.items).toHaveLength(1);
+    expect(json.items[0].name).toContain("HER2");
+  });
+
+  it("falls back to local targets when the upstream target search response is malformed", async () => {
+    process.env.ADAPTYV_API_URL = "https://example.com/v1";
+    process.env.ADAPTYV_API_TOKEN = "demo-token";
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response("not json", {
+          status: 200,
+          headers: {
+            "content-type": "text/plain",
+          },
+        })
+      )
+    );
+
+    const response = await getTargets(
+      new NextRequest("http://localhost/api/targets?search=HER2")
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(json.meta).toEqual({ source: "fallback" });
+    expect(json.items).toHaveLength(1);
+    expect(json.items[0].name).toContain("HER2");
+  });
+
   it("returns fallback target details when the catalog proxy is unavailable", async () => {
     delete process.env.ADAPTYV_API_URL;
     delete process.env.ADAPTYV_API_TOKEN;
