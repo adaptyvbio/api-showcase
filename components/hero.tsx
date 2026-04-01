@@ -44,7 +44,7 @@ function SequenceChip() {
   );
 }
 
-const PHRASES = ["your users", "AI agents"] as const;
+const PHRASES = ["your users", "your AI agents"] as const;
 const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 function FlipWord() {
@@ -96,7 +96,7 @@ function FlipWord() {
   }, [flip]);
 
   return (
-    <span className="inline-block min-w-[8ch] text-left">
+    <span className="inline-block min-w-[14ch] text-left">
       {display.split("").map((char, i) => (
         <span
           key={`${i}-${char}`}
