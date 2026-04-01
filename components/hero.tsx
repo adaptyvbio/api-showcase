@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 // Codon table: each amino acid maps to its most common codon
 const AA_TO_CODON: Record<string, string> = {
@@ -11,40 +11,29 @@ const AA_TO_CODON: Record<string, string> = {
   S: "AGC", T: "ACC", V: "GTG", W: "TGG", Y: "TAC",
 };
 
-const SEQUENCE = "EVQLVESGGGLVQPGGSLRL";
+// "LIVE" as amino acid single-letter codes → DNA codons
+const AA_WORD = ["L", "I", "V", "E"];
+const DNA_WORD = AA_WORD.map((aa) => AA_TO_CODON[aa]);
 
 function SequenceChip() {
   const [hovered, setHovered] = useState(false);
 
-  const dnaSequence = useMemo(
-    () => SEQUENCE.split("").map((aa) => AA_TO_CODON[aa] ?? "NNN").join(""),
-    []
-  );
-
-  const displayText = hovered ? dnaSequence : SEQUENCE;
-  const label = hovered ? "DNA" : "Amino acids";
-
   return (
     <div
-      className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full border border-border/60 bg-card/80 mb-8 cursor-default select-none group"
+      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-border/60 bg-card/80 mb-8 cursor-default select-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold font-mono uppercase tracking-[0.04em] bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.20)]">
-        <span className="w-1 h-1 rounded-full bg-[#22C55E] pulse-dot" />
-        Live
+      <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] pulse-dot shrink-0" />
+      <span className="font-mono text-xs font-semibold tracking-[0.15em] transition-all duration-500 ease-in-out">
+        {hovered ? (
+          <span className="text-[#0070F3]">{DNA_WORD.join(" ")}</span>
+        ) : (
+          <span className="text-[#22C55E]">LIVE</span>
+        )}
       </span>
-      <span className="font-mono text-[10px] text-muted-foreground tracking-wide overflow-hidden transition-all duration-500 ease-in-out">
-        <span className="hidden sm:inline">
-          {displayText.slice(0, 36)}
-          <span className="text-[#0070F3]">{displayText.slice(36, 42)}</span>
-          {displayText.length > 42 && displayText.slice(42, 48)}
-          {displayText.length > 48 && "..."}
-        </span>
-        <span className="sm:hidden">{displayText.slice(0, 20)}</span>
-      </span>
-      <span className="text-[9px] font-mono text-muted-foreground/50 uppercase tracking-wider hidden sm:inline transition-all duration-300">
-        {label}
+      <span className="text-[10px] font-mono text-muted-foreground/50 tracking-wide transition-all duration-300">
+        {hovered ? "codons" : "amino acids"}
       </span>
     </div>
   );
