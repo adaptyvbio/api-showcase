@@ -11,29 +11,34 @@ const AA_TO_CODON: Record<string, string> = {
   S: "AGC", T: "ACC", V: "GTG", W: "TGG", Y: "TAC",
 };
 
-// "LIVE" as amino acid single-letter codes → DNA codons
-const AA_WORD = ["L", "I", "V", "E"];
-const DNA_WORD = AA_WORD.map((aa) => AA_TO_CODON[aa]);
+// "LIVE" as amino acid single-letter codes → DNA codons (L→CTG, I→ATC, V→GTG, E→GAG)
+const AA_LETTERS = ["L", "I", "V", "E"] as const;
+const DNA_CODONS = AA_LETTERS.map((aa) => AA_TO_CODON[aa]);
 
 function SequenceChip() {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-border/60 bg-card/80 mb-8 cursor-default select-none"
+      className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full border border-border/60 bg-card/80 mb-8 cursor-default select-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] pulse-dot shrink-0" />
-      <span className="font-mono text-xs font-semibold tracking-[0.15em] transition-all duration-500 ease-in-out">
-        {hovered ? (
-          <span className="text-[#0070F3]">{DNA_WORD.join(" ")}</span>
-        ) : (
-          <span className="text-[#22C55E]">LIVE</span>
-        )}
-      </span>
-      <span className="text-[10px] font-mono text-muted-foreground/50 tracking-wide transition-all duration-300">
-        {hovered ? "codons" : "amino acids"}
+      <span className="w-1.5 h-1.5 rounded-full bg-success pulse-dot shrink-0" />
+      <span className="font-mono text-xs font-semibold tracking-[0.12em]">
+        {AA_LETTERS.map((aa, i) => (
+          <span
+            key={i}
+            className="inline-block transition-all duration-500 ease-in-out"
+            style={{
+              transitionDelay: `${i * 60}ms`,
+              color: hovered ? "var(--color-accent-blue)" : "var(--color-success)",
+            }}
+          >
+            {hovered ? DNA_CODONS[i] : aa}
+            {hovered && i < AA_LETTERS.length - 1 ? "\u2009" : ""}
+          </span>
+        ))}
       </span>
     </div>
   );
@@ -49,7 +54,7 @@ export function Hero() {
         <h1 className="text-[2rem] sm:text-[2.5rem] md:text-[3.25rem] lg:text-[3.75rem] font-bold tracking-[-0.045em] text-foreground leading-[1.05]">
           Let your users test
           <br className="hidden sm:block" /> protein designs{" "}
-          <span className="text-[#0070F3]">in a real lab</span>
+          <span className="text-accent-blue">in a real lab</span>
         </h1>
 
         <p className="mt-5 text-[15px] sm:text-lg md:text-[1.2rem] text-foreground/60 max-w-[500px] mx-auto leading-relaxed tracking-[-0.005em]">
@@ -81,7 +86,7 @@ export function Hero() {
         <div className="mt-10 flex items-center justify-center gap-3">
           <a
             href="#browse-targets"
-            className="h-11 px-6 inline-flex items-center rounded-lg bg-[#0070F3] text-white text-sm font-semibold hover:bg-[#005CC8] transition-colors duration-150 tracking-[-0.005em]"
+            className="h-11 px-6 inline-flex items-center rounded-lg bg-accent-blue text-white text-sm font-semibold hover:bg-accent-blue-hover transition-colors duration-150 tracking-[-0.005em]"
           >
             Explore Examples
           </a>

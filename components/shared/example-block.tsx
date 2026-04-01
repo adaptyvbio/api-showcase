@@ -29,7 +29,7 @@ export function ExampleBlock({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="mb-6">
-          <span className="inline-flex items-center px-2 py-1 rounded-md bg-[rgba(0,112,243,0.08)] text-[#0070F3] font-mono text-xs font-semibold tracking-[0.08em]">
+          <span className="inline-flex items-center px-2 py-1 rounded-md bg-accent-blue-muted text-accent-blue font-mono text-xs font-semibold tracking-[0.08em]">
             {String(number).padStart(2, "0")}
           </span>
           <div className="flex items-center gap-3 mt-3">

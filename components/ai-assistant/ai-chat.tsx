@@ -192,7 +192,7 @@ export function AiChat() {
                   <button
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
-                    className="block w-full text-left px-3 py-2.5 rounded-lg border border-border text-sm text-[#3C4257] hover:bg-muted hover:border-[#D4D4D8] transition-colors"
+                    className="block w-full text-left px-3 py-2.5 rounded-lg border border-border text-sm text-foreground/60 hover:bg-muted hover:border-border transition-colors"
                   >
                     {suggestion}
                   </button>

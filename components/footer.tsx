@@ -22,7 +22,7 @@ export function Footer() {
                   href="https://docs.adaptyvbio.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-[#0070F3] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
                 >
                   API Documentation
                 </a>
@@ -32,7 +32,7 @@ export function Footer() {
                   href="https://docs.adaptyvbio.com/reference"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-[#0070F3] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
                 >
                   API Reference
                 </a>
@@ -42,7 +42,7 @@ export function Footer() {
                   href="https://docs.adaptyvbio.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-[#0070F3] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
                 >
                   Status
                 </a>
@@ -59,7 +59,7 @@ export function Footer() {
                   href="https://adaptyvbio.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-[#0070F3] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
                 >
                   About
                 </a>
@@ -67,7 +67,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:contact@adaptyvbio.com"
-                  className="text-sm text-muted-foreground hover:text-[#0070F3] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-accent-blue transition-colors"
                 >
                   Contact
                 </a>

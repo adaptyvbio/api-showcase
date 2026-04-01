@@ -59,7 +59,7 @@ export function Nav() {
               onClick={() => scrollTo(id)}
               className={`text-sm font-medium transition-colors duration-150 pb-0.5 border-b-2 ${
                 activeSection === id
-                  ? "text-foreground border-[#0070F3]"
+                  ? "text-foreground border-accent-blue"
                   : "text-muted-foreground border-transparent hover:text-foreground"
               }`}
             >
@@ -73,7 +73,7 @@ export function Nav() {
             href="https://docs.adaptyvbio.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex h-9 px-4 items-center rounded-lg bg-[#0070F3] text-white text-sm font-medium hover:bg-[#005CC8] transition-colors duration-150"
+            className="hidden sm:inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium hover:bg-accent-blue-hover transition-colors duration-150"
           >
             Explore API Docs
           </a>
@@ -104,7 +104,7 @@ export function Nav() {
               href="https://docs.adaptyvbio.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-9 px-4 items-center rounded-lg bg-[#0070F3] text-white text-sm font-medium"
+              className="inline-flex h-9 px-4 items-center rounded-lg bg-accent-blue text-white text-sm font-medium"
             >
               Explore API Docs
             </a>
