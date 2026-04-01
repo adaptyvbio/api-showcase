@@ -219,18 +219,15 @@ export function ResultsViewer() {
             /* Vertical bar chart with Y-axis */
             <div className="space-y-1">
               <div className="flex" ref={chartRef}>
-                {/* Y-axis labels */}
-                <div className="flex flex-col justify-between h-[220px] pr-2 pt-1 pb-1 shrink-0">
+                {/* Y-axis labels — positioned absolutely within chart height */}
+                <div className="relative h-[220px] w-10 shrink-0">
                   {Y_AXIS_TICKS.map((tick) => {
                     const pct = ((tick.logKd - LOG_KD_MIN) / (LOG_KD_MAX - LOG_KD_MIN)) * 100;
                     return (
                       <div
                         key={tick.label}
-                        className="text-[9px] font-mono text-muted-foreground/60 text-right leading-none"
-                        style={{
-                          position: "relative",
-                          bottom: `${pct - 50}%`,
-                        }}
+                        className="absolute right-1 text-[9px] font-mono text-muted-foreground/60 leading-none -translate-y-1/2"
+                        style={{ bottom: `${pct}%` }}
                       >
                         {tick.label}
                       </div>
@@ -239,7 +236,7 @@ export function ResultsViewer() {
                 </div>
 
                 {/* Chart area */}
-                <div className="flex-1 relative">
+                <div className="flex-1 relative overflow-hidden">
                   {/* Horizontal grid lines */}
                   <div className="absolute inset-0 pointer-events-none">
                     {Y_AXIS_TICKS.map((tick) => {
@@ -247,7 +244,7 @@ export function ResultsViewer() {
                       return (
                         <div
                           key={tick.label}
-                          className="absolute w-full border-t border-border/40"
+                          className="absolute w-full border-t border-border/30"
                           style={{ bottom: `${pct}%` }}
                         />
                       );
@@ -261,7 +258,6 @@ export function ResultsViewer() {
                       const height = getBarPercent(r.kd);
                       const isNonBinder = r.kd === null;
                       const barCount = chartSorted.length;
-                      // Position tooltip toward center of chart to avoid clipping
                       const isLeftHalf = i < barCount / 2;
 
                       return (
@@ -271,20 +267,19 @@ export function ResultsViewer() {
                           onMouseEnter={() => setHoveredIdx(i)}
                           onMouseLeave={() => setHoveredIdx(null)}
                         >
-                          {/* Bar */}
                           <div
                             className={cn(
-                              "w-[60%] rounded-t-sm transition-all duration-700 ease-out",
+                              "w-[55%] rounded-t-sm transition-all duration-700 ease-out",
                               isNonBinder
                                 ? "bg-transparent"
                                 : isControl
-                                  ? "bg-foreground/20"
+                                  ? "bg-muted-foreground/30"
                                   : "bg-accent-blue"
                             )}
                             style={{
-                              height: isNonBinder ? "1px" : `${height}%`,
+                              height: isNonBinder ? "0px" : `${height}%`,
                               transitionDelay: `${i * 30}ms`,
-                              ...(isNonBinder ? { borderTop: "1px dashed var(--color-muted-foreground)", opacity: 0.3 } : {}),
+                              minHeight: isNonBinder ? "0px" : "2px",
                             }}
                           />
 
@@ -339,7 +334,7 @@ export function ResultsViewer() {
               </div>
 
               {/* X-axis labels */}
-              <div className="flex" style={{ paddingLeft: "36px" }}>
+              <div className="flex" style={{ paddingLeft: "40px" }}>
                 <div className="flex-1 flex gap-[2px]">
                   {chartSorted.map((r) => {
                     const isControl = r.sequence_name === "Ctrl-Tras";
@@ -360,19 +355,9 @@ export function ResultsViewer() {
                 </div>
               </div>
 
-              {/* Minimal legend */}
-              <div className="flex items-center gap-4 text-[10px] pt-1">
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-accent-blue" />
-                  <span className="text-muted-foreground">Binder</span>
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-foreground/20" />
-                  <span className="text-muted-foreground">Control</span>
-                </span>
-                <span className="text-muted-foreground/50 ml-auto font-mono">
-                  KD (M) — lower = stronger
-                </span>
+              {/* Annotation */}
+              <div className="text-[10px] text-muted-foreground/50 font-mono pt-1">
+                KD (M) — lower = stronger binding
               </div>
             </div>
           ) : (
