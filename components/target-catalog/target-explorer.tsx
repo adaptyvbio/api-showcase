@@ -8,6 +8,7 @@ import { formatCents } from "@/lib/utils";
 import type { Target, TargetDetail, TargetsResponse } from "@/lib/api-types";
 import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
+import { ProteinViewer } from "@/components/shared/protein-viewer";
 
 export function TargetExplorer() {
   const [search, setSearch] = useState("");
@@ -129,28 +130,38 @@ function TargetCard({ target, onClick }: { target: Target; onClick: () => void }
   return (
     <button
       onClick={onClick}
-      className="text-left p-4 rounded-lg border border-border hover:border-accent-blue/30 hover:bg-accent-blue/[0.02] transition-all group"
+      className="text-left rounded-lg border border-border hover:border-accent-blue/30 hover:bg-accent-blue/[0.02] transition-all group overflow-hidden"
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2 group-hover:text-accent-blue transition-colors">
-          {target.name}
-        </h3>
-      </div>
-      <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="secondary" className="text-[10px] font-mono">
-          {target.vendor_name}
-        </Badge>
-        {target.uniprot_id && (
-          <Badge variant="outline" className="text-[10px] font-mono">
-            <MapPin className="w-2.5 h-2.5 mr-0.5" />
-            {target.uniprot_id.split("-")[0]}
+      {/* 3D structure thumbnail */}
+      {target.uniprot_id && (
+        <ProteinViewer
+          uniprotId={target.uniprot_id}
+          size="sm"
+          className="w-full"
+        />
+      )}
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2 group-hover:text-accent-blue transition-colors">
+            {target.name}
+          </h3>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="secondary" className="text-[10px] font-mono">
+            {target.vendor_name}
           </Badge>
-        )}
-        <span className="ml-auto text-xs font-mono text-muted-foreground flex items-center gap-0.5">
-          <DollarSign className="w-3 h-3" />
-          {formatCents(target.pricing.price_per_sequence_cents)}
-          <span className="text-[10px]">/seq</span>
-        </span>
+          {target.uniprot_id && (
+            <Badge variant="outline" className="text-[10px] font-mono">
+              <MapPin className="w-2.5 h-2.5 mr-0.5" />
+              {target.uniprot_id.split("-")[0]}
+            </Badge>
+          )}
+          <span className="ml-auto text-xs font-mono text-muted-foreground flex items-center gap-0.5">
+            <DollarSign className="w-3 h-3" />
+            {formatCents(target.pricing.price_per_sequence_cents)}
+            <span className="text-[10px]">/seq</span>
+          </span>
+        </div>
       </div>
     </button>
   );
@@ -171,6 +182,16 @@ function TargetDetailView({
       >
         &larr; Back to results
       </button>
+
+      {/* Large 3D structure viewer */}
+      {target.uniprot_id && (
+        <ProteinViewer
+          uniprotId={target.uniprot_id}
+          size="lg"
+          className="w-full"
+        />
+      )}
+
       <div>
         <h3 className="text-base font-semibold text-foreground mb-1">
           {target.name}
