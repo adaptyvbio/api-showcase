@@ -32,14 +32,14 @@ const STATUS_ICONS: Record<string, typeof FileText> = {
   done: CheckCircle2,
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  waiting_for_confirmation: "bg-amber-500/10 text-amber-500",
-  waiting_for_materials: "bg-orange-500/10 text-orange-500",
-  in_production: "bg-blue-500/10 text-blue-500",
-  data_analysis: "bg-purple-500/10 text-purple-500",
-  in_review: "bg-cyan-500/10 text-cyan-500",
-  done: "bg-success/10 text-success",
+const STATUS_COLORS: Record<string, { bg: string; text: string; ring: string }> = {
+  draft: { bg: "bg-muted", text: "text-muted-foreground", ring: "ring-border" },
+  waiting_for_confirmation: { bg: "bg-amber-500/10", text: "text-amber-500", ring: "ring-amber-500/30" },
+  waiting_for_materials: { bg: "bg-orange-500/10", text: "text-orange-500", ring: "ring-orange-500/30" },
+  in_production: { bg: "bg-blue-500/10", text: "text-blue-500", ring: "ring-blue-500/30" },
+  data_analysis: { bg: "bg-purple-500/10", text: "text-purple-500", ring: "ring-purple-500/30" },
+  in_review: { bg: "bg-cyan-500/10", text: "text-cyan-500", ring: "ring-cyan-500/30" },
+  done: { bg: "bg-success/10", text: "text-success", ring: "ring-success/30" },
 };
 
 const TYPE_ICONS: Record<string, typeof FileText> = {
@@ -51,14 +51,8 @@ const TYPE_ICONS: Record<string, typeof FileText> = {
 
 function formatTimestamp(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  }) + " " + d.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+    " " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 export function LifecycleViewer() {
@@ -74,22 +68,18 @@ export function LifecycleViewer() {
     setIsPlaying(true);
   }, [visibleCount]);
 
-  const pauseAnimation = () => {
-    setIsPlaying(false);
-  };
+  const pauseAnimation = () => setIsPlaying(false);
 
   const resetAnimation = () => {
     setIsPlaying(false);
     setVisibleCount(0);
   };
 
-  // Auto-advance timer
   useEffect(() => {
     if (!isPlaying) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       return;
     }
-
     intervalRef.current = setInterval(() => {
       setVisibleCount((prev) => {
         if (prev >= DEMO_UPDATES.length) {
@@ -99,23 +89,17 @@ export function LifecycleViewer() {
         return prev + 1;
       });
     }, 1200);
-
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isPlaying]);
 
-  // Auto-scroll feed to bottom
   useEffect(() => {
     feedEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [visibleCount]);
 
   const visibleUpdates = DEMO_UPDATES.slice(0, visibleCount);
-  const latestStatus = visibleUpdates.length > 0
-    ? visibleUpdates[visibleUpdates.length - 1].status
-    : null;
 
-  // Build the API response that grows as updates come in
   const apiResponse = visibleCount > 0
     ? {
         items: visibleUpdates.map((u) => ({
@@ -145,11 +129,7 @@ export function LifecycleViewer() {
           {/* Controls */}
           <div className="flex items-center gap-2">
             {isPlaying ? (
-              <Button
-                onClick={pauseAnimation}
-                variant="outline"
-                className="text-xs h-8"
-              >
+              <Button onClick={pauseAnimation} variant="outline" className="text-xs h-8">
                 <Pause className="w-3 h-3 mr-1.5" />
                 Pause
               </Button>
@@ -163,98 +143,107 @@ export function LifecycleViewer() {
               </Button>
             )}
             {visibleCount > 0 && (
-              <Button
-                onClick={resetAnimation}
-                variant="outline"
-                className="text-xs h-8"
-              >
+              <Button onClick={resetAnimation} variant="outline" className="text-xs h-8">
                 <RotateCcw className="w-3 h-3 mr-1.5" />
                 Reset
               </Button>
             )}
-            {latestStatus && (
-              <Badge
-                variant="outline"
-                className={cn(
-                  "ml-auto text-[10px] font-mono",
-                  STATUS_COLORS[latestStatus] ?? ""
-                )}
-              >
-                {latestStatus.replace(/_/g, " ")}
-              </Badge>
-            )}
+            <span className="ml-auto text-[10px] font-mono text-muted-foreground">
+              {DEMO_EXPERIMENT_CODE}
+            </span>
           </div>
 
-          {/* Experiment code */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="font-mono">{DEMO_EXPERIMENT_CODE}</span>
-            <span>·</span>
-            <span>Anti-HER2 VHH Binding Screen</span>
-          </div>
-
-          {/* Update feed */}
+          {/* Timeline */}
           <div className="border border-border rounded-lg overflow-hidden">
-            <div className="max-h-[360px] overflow-y-auto">
+            <div className="max-h-[420px] overflow-y-auto p-4">
               {visibleCount === 0 ? (
-                <div className="p-8 text-center text-sm text-muted-foreground">
+                <div className="py-12 text-center text-sm text-muted-foreground">
                   Press <strong>Start Demo</strong> to watch experiment updates stream in
                 </div>
               ) : (
-                <div className="divide-y divide-border/50">
-                  {visibleUpdates.map((update, i) => {
-                    const StatusIcon = STATUS_ICONS[update.status] ?? FileText;
-                    const TypeIcon = TYPE_ICONS[update.type] ?? FileText;
-                    const isLatest = i === visibleUpdates.length - 1;
+                <div className="relative">
+                  {/* Vertical line */}
+                  <div className="absolute left-[13px] top-4 bottom-4 w-px bg-border" />
 
-                    return (
-                      <div
-                        key={update.id}
-                        className={cn(
-                          "p-3 transition-all duration-300",
-                          isLatest && isPlaying
-                            ? "bg-accent-blue/[0.03]"
-                            : "bg-transparent"
-                        )}
-                        style={{
-                          animation: "fade-in-up 0.3s ease-out",
-                        }}
-                      >
-                        <div className="flex items-start gap-3">
+                  <div className="space-y-0">
+                    {DEMO_UPDATES.map((update, i) => {
+                      const isVisible = i < visibleCount;
+                      const isLatest = i === visibleCount - 1;
+                      const isPast = i < visibleCount - 1;
+                      const isFuture = !isVisible;
+
+                      const colors = STATUS_COLORS[update.status] ?? STATUS_COLORS.draft;
+                      const StatusIcon = STATUS_ICONS[update.status] ?? FileText;
+                      const TypeIcon = TYPE_ICONS[update.type] ?? FileText;
+
+                      return (
+                        <div
+                          key={update.id}
+                          className={cn(
+                            "relative flex gap-3 py-3 transition-all duration-500",
+                            isFuture && "opacity-[0.08]",
+                            isPast && "opacity-40",
+                            isLatest && "opacity-100",
+                          )}
+                        >
+                          {/* Timeline dot */}
                           <div
                             className={cn(
-                              "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                              STATUS_COLORS[update.status] ?? "bg-muted text-muted-foreground"
+                              "relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ring-2",
+                              isLatest
+                                ? cn(colors.bg, colors.text, colors.ring)
+                                : isPast
+                                  ? "bg-success/10 text-success ring-success/20"
+                                  : "bg-muted text-muted-foreground/30 ring-border/30"
                             )}
                           >
-                            <StatusIcon className="w-3.5 h-3.5" />
+                            {isPast ? (
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                            ) : (
+                              <StatusIcon className="w-3.5 h-3.5" />
+                            )}
                           </div>
-                          <div className="flex-1 min-w-0">
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0 pt-0.5">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-sm font-medium text-foreground">
+                              <span className={cn(
+                                "text-sm font-medium transition-colors duration-500",
+                                isLatest ? "text-foreground" : "text-foreground"
+                              )}>
                                 {update.title}
                               </span>
+                              {isLatest && (
+                                <Badge
+                                  variant="outline"
+                                  className={cn("text-[9px] font-mono", colors.text)}
+                                >
+                                  {update.status.replace(/_/g, " ")}
+                                </Badge>
+                              )}
                             </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                              {update.content}
-                            </p>
-                            <div className="flex items-center gap-2 mt-1.5">
-                              <span className="text-[10px] font-mono text-muted-foreground/60">
-                                {formatTimestamp(update.timestamp)}
-                              </span>
-                              <Badge
-                                variant="outline"
-                                className="text-[9px] font-mono px-1 py-0 gap-0.5"
-                              >
-                                <TypeIcon className="w-2 h-2" />
-                                {update.type.replace(/_/g, " ")}
-                              </Badge>
-                            </div>
+                            {(isLatest || isPast) && (
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                {update.content}
+                              </p>
+                            )}
+                            {isVisible && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[10px] font-mono text-muted-foreground/50">
+                                  {formatTimestamp(update.timestamp)}
+                                </span>
+                                <Badge variant="outline" className="text-[9px] font-mono px-1 py-0 gap-0.5">
+                                  <TypeIcon className="w-2 h-2" />
+                                  {update.type.replace(/_/g, " ")}
+                                </Badge>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={feedEndRef} />
+                      );
+                    })}
+                    <div ref={feedEndRef} />
+                  </div>
                 </div>
               )}
             </div>
@@ -265,9 +254,7 @@ export function LifecycleViewer() {
             <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-accent-blue rounded-full transition-all duration-500"
-                style={{
-                  width: `${(visibleCount / DEMO_UPDATES.length) * 100}%`,
-                }}
+                style={{ width: `${(visibleCount / DEMO_UPDATES.length) * 100}%` }}
               />
             </div>
             <span className="text-[10px] font-mono text-muted-foreground">

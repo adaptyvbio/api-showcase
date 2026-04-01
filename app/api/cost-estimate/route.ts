@@ -1,29 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = process.env.ADAPTYV_API_URL!;
-const API_TOKEN = process.env.ADAPTYV_API_TOKEN!;
+import {
+  costEstimateRequestSchema,
+  costEstimateResponseSchema,
+  fetchFoundryJson,
+  foundryErrorResponse,
+  parseRequestJson,
+} from "@/lib/foundry-api";
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const url = `${API_URL}/experiments/cost-estimate`;
-
   try {
-    const res = await fetch(url, {
+    const body = await parseRequestJson(request, costEstimateRequestSchema);
+    const { data, status } = await fetchFoundryJson({
+      path: "/experiments/cost-estimate",
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(8000),
+      body,
+      schema: costEstimateResponseSchema,
     });
 
-    const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
-  } catch {
-    return NextResponse.json(
-      { error: "API timeout" },
-      { status: 504 }
-    );
+    return NextResponse.json(data, { status });
+  } catch (error) {
+    return foundryErrorResponse(error);
   }
 }

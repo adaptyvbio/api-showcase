@@ -1,4 +1,9 @@
-import type { AffinityResult } from "./api-types";
+import type {
+  AffinityResult,
+  BindingStrength,
+  ExperimentInfo,
+  ResultsResponse,
+} from "./api-types";
 
 // ─── Consistent Demo Data Model ───────────────────────────────────────────
 // All sections reference the same experiment for coherence:
@@ -154,20 +159,27 @@ export const DEMO_SEQUENCES: DemoSequence[] = [
 ];
 
 // Build a sequences map for API requests
-export function buildSequencesMap(): Record<string, string> {
-  const map: Record<string, string> = {};
-  for (const s of DEMO_SEQUENCES) {
-    map[s.name] = s.sequence;
-  }
-  return map;
+export function buildSequencesMap(
+  sequences: DemoSequence[] = DEMO_SEQUENCES
+): Record<string, string> {
+  return Object.fromEntries(
+    sequences.map(({ name, sequence }) => [name, sequence])
+  );
 }
+
+export const DEMO_SEQUENCES_MAP = buildSequencesMap();
 
 // ─── Binding Results (20 sequences) ──────────────────────────────────────
 // KD values range from ~0.8 nM (strong) to non-binder
 // Control (Ctrl-Tras) at 156 nM
 // Inverted log scale: higher -log10(KD) = better binder
 
-export const DEMO_RESULTS: AffinityResult[] = [
+interface DemoResultFixture extends AffinityResult {
+  sequence_name: DemoSequence["name"];
+  binding_strength: BindingStrength;
+}
+
+export const DEMO_RESULTS = [
   // Strong binders (KD < 5 nM)
   { sequence_id: "seq-01", sequence_name: "VHH-01", kd: 8.1e-10, kon: 2.4e6, koff: 1.9e-3, binding_strength: "strong", r_squared: 0.999 },
   { sequence_id: "seq-02", sequence_name: "VHH-02", kd: 1.2e-9, kon: 1.8e6, koff: 2.2e-3, binding_strength: "strong", r_squared: 0.998 },
@@ -190,12 +202,24 @@ export const DEMO_RESULTS: AffinityResult[] = [
   { sequence_id: "seq-14", sequence_name: "VHH-14", kd: 1.5e-6, kon: 8.1e3, koff: 1.2e-2, binding_strength: "non_binder", r_squared: 0.942 },
   { sequence_id: "seq-15", sequence_name: "VHH-15", kd: 3.2e-6, kon: 4.5e3, koff: 1.4e-2, binding_strength: "non_binder", r_squared: 0.928 },
   // No measurable binding
-  { sequence_id: "seq-16", sequence_name: "VHH-16", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
-  { sequence_id: "seq-17", sequence_name: "VHH-17", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
-  { sequence_id: "seq-18", sequence_name: "VHH-18", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "non_binder", r_squared: null as unknown as number },
+  { sequence_id: "seq-16", sequence_name: "VHH-16", kd: null, kon: null, koff: null, binding_strength: "non_binder", r_squared: null },
+  { sequence_id: "seq-17", sequence_name: "VHH-17", kd: null, kon: null, koff: null, binding_strength: "non_binder", r_squared: null },
+  { sequence_id: "seq-18", sequence_name: "VHH-18", kd: null, kon: null, koff: null, binding_strength: "non_binder", r_squared: null },
   // No expression
-  { sequence_id: "seq-19", sequence_name: "VHH-19", kd: null as unknown as number, kon: null as unknown as number, koff: null as unknown as number, binding_strength: "no_expression" as AffinityResult["binding_strength"], r_squared: null as unknown as number },
-];
+  { sequence_id: "seq-19", sequence_name: "VHH-19", kd: null, kon: null, koff: null, binding_strength: "no_expression", r_squared: null },
+] satisfies DemoResultFixture[];
+
+function countBindingStrength(bindingStrength: BindingStrength) {
+  return DEMO_RESULTS.filter((result) => result.binding_strength === bindingStrength).length;
+}
+
+const DEMO_RESULT_COUNTS = {
+  strong: countBindingStrength("strong"),
+  medium: countBindingStrength("medium"),
+  weak: countBindingStrength("weak"),
+  non_binder: countBindingStrength("non_binder"),
+  no_expression: countBindingStrength("no_expression"),
+};
 
 // ─── Experiment Updates (auto-animated timeline) ─────────────────────────
 
@@ -275,7 +299,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     experiment_code: DEMO_EXPERIMENT_CODE,
     type: "lab_update",
     title: "Expression & purification complete",
-    content: "19 of 20 sequences expressed. VHH-19 showed no detectable expression. Proceeding with 19 candidates + 1 control.",
+    content: `${DEMO_SEQUENCES.length - DEMO_RESULT_COUNTS.no_expression} of ${DEMO_SEQUENCES.length} sequences expressed. VHH-19 showed no detectable expression. Proceeding with 19 candidates + 1 control.`,
     status: "in_production",
     timestamp: addHours(BASE_DATE, 336),
   },
@@ -295,7 +319,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     experiment_code: DEMO_EXPERIMENT_CODE,
     type: "status_change",
     title: "Data analysis complete",
-    content: "Kinetic fits processed. 4 strong binders identified (KD < 5 nM). Results under review.",
+    content: `Kinetic fits processed. ${DEMO_RESULT_COUNTS.strong} strong binders identified (KD < 5 nM). Results under review.`,
     status: "in_review",
     timestamp: addHours(BASE_DATE, 384),
   },
@@ -305,7 +329,7 @@ export const DEMO_UPDATES: DemoUpdate[] = [
     experiment_code: DEMO_EXPERIMENT_CODE,
     type: "results",
     title: "Results published",
-    content: "Your binding data is ready. 4 strong binders, 4 medium, 4 weak, 7 non-binders, 1 no expression. Data package available for download.",
+    content: `Your binding data is ready. ${DEMO_RESULT_COUNTS.strong} strong binders, ${DEMO_RESULT_COUNTS.medium} medium, ${DEMO_RESULT_COUNTS.weak} weak, ${DEMO_RESULT_COUNTS.non_binder} non-binders, ${DEMO_RESULT_COUNTS.no_expression} no expression. Data package available for download.`,
     status: "done",
     timestamp: addHours(BASE_DATE, 408),
   },
@@ -313,64 +337,73 @@ export const DEMO_UPDATES: DemoUpdate[] = [
 
 // ─── Lifecycle Stages (for the create experiment response) ───────────────
 
-export const MOCK_CREATE_RESPONSE = {
+const DEMO_EXPERIMENT_NAME = "Anti-HER2 VHH Binding Screen";
+const DEMO_CREATED_AT = addHours(BASE_DATE, 0);
+const DEMO_EXPERIMENT_URL = `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`;
+const DEMO_DATA_PACKAGE_URL = `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`;
+const DEMO_SEQUENCE_COUNT = DEMO_SEQUENCES.length;
+const DEMO_PRICE_PER_SEQUENCE_CENTS = 9900;
+const DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS = 1749;
+
+const DEMO_EXPERIMENT_SPEC: ExperimentInfo["experiment_spec"] = {
+  experiment_type: "screening",
+  method: "bli",
+  target_id: DEMO_TARGET_ID,
+  sequences: DEMO_SEQUENCES_MAP,
+  n_replicates: 1,
+};
+
+const DEMO_EXPERIMENT_BASE: Omit<ExperimentInfo, "status"> = {
   id: DEMO_EXPERIMENT_ID,
   code: DEMO_EXPERIMENT_CODE,
-  name: "Anti-HER2 VHH Binding Screen",
-  status: "draft",
-  experiment_spec: {
-    experiment_type: "screening",
-    method: "bli",
-    target_id: DEMO_TARGET_ID,
-    sequences: buildSequencesMap(),
-    n_replicates: 1,
+  name: DEMO_EXPERIMENT_NAME,
+  experiment_spec: DEMO_EXPERIMENT_SPEC,
+  created_at: DEMO_CREATED_AT,
+  experiment_url: DEMO_EXPERIMENT_URL,
+};
+
+const DEMO_COST_BREAKDOWN = {
+  pricing_version: "v1_2026-01-20",
+  assay: {
+    experiment_type: DEMO_EXPERIMENT_SPEC.experiment_type,
+    sequence_count: DEMO_SEQUENCE_COUNT,
+    n_replicates: DEMO_EXPERIMENT_SPEC.n_replicates ?? 1,
+    unit_price_cents: DEMO_PRICE_PER_SEQUENCE_CENTS,
+    subtotal_cents: DEMO_SEQUENCE_COUNT * DEMO_PRICE_PER_SEQUENCE_CENTS,
   },
-  created_at: addHours(BASE_DATE, 0),
-  experiment_url: `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`,
+  materials: {
+    target_id: DEMO_TARGET_ID,
+    target_name: DEMO_TARGET_NAME,
+    sequence_count: DEMO_SEQUENCE_COUNT,
+    price_per_sequence_cents: DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS,
+    subtotal_cents: DEMO_SEQUENCE_COUNT * DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS,
+  },
+  total_cents:
+    DEMO_SEQUENCE_COUNT * DEMO_PRICE_PER_SEQUENCE_CENTS +
+    DEMO_SEQUENCE_COUNT * DEMO_MATERIAL_PRICE_PER_SEQUENCE_CENTS,
+};
+
+export const MOCK_CREATE_RESPONSE: ExperimentInfo = {
+  ...DEMO_EXPERIMENT_BASE,
+  status: "draft",
   costs: {
     type: "estimate",
-    breakdown: {
-      pricing_version: "v1_2026-01-20",
-      assay: {
-        experiment_type: "screening",
-        sequence_count: 20,
-        n_replicates: 1,
-        unit_price_cents: 9900,
-        subtotal_cents: 198000,
-      },
-      materials: {
-        target_id: DEMO_TARGET_ID,
-        target_name: DEMO_TARGET_NAME,
-        sequence_count: 20,
-        price_per_sequence_cents: 1749,
-        subtotal_cents: 34980,
-      },
-      total_cents: 232980,
-    },
+    breakdown: DEMO_COST_BREAKDOWN,
   },
 };
 
 // Full experiment response (for results section)
-export const MOCK_EXPERIMENT_FULL = {
-  id: DEMO_EXPERIMENT_ID,
-  code: DEMO_EXPERIMENT_CODE,
-  name: "Anti-HER2 VHH Binding Screen",
+export const MOCK_EXPERIMENT_FULL: ExperimentInfo & {
+  data_package_url: string;
+} = {
+  ...DEMO_EXPERIMENT_BASE,
   status: "done",
-  experiment_spec: {
-    experiment_type: "screening",
-    method: "bli",
-    target_id: DEMO_TARGET_ID,
-    sequences: buildSequencesMap(),
-    n_replicates: 1,
-  },
-  created_at: addHours(BASE_DATE, 0),
   results_status: "available",
-  experiment_url: `https://foundry.adaptyvbio.com/organization/demo/experiment/${DEMO_EXPERIMENT_ID}`,
-  data_package_url: `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`,
+  data_package_url: DEMO_DATA_PACKAGE_URL,
 };
 
 // Mock results API response
-export const MOCK_RESULTS_RESPONSE = {
+export const MOCK_RESULTS_RESPONSE: ResultsResponse = {
   items: DEMO_RESULTS.map((r) => ({
     id: r.sequence_id,
     sequence_id: r.sequence_id,
@@ -388,8 +421,8 @@ export const MOCK_RESULTS_RESPONSE = {
     n_replicates: 1,
     is_control: r.sequence_name === "Ctrl-Tras",
   })),
-  total: 20,
-  count: 20,
+  total: DEMO_RESULTS.length,
+  count: DEMO_RESULTS.length,
   offset: 0,
-  data_package_url: `https://s3.amazonaws.com/adaptyv-foundry-results/${DEMO_EXPERIMENT_CODE}/data-package.zip`,
+  data_package_url: DEMO_DATA_PACKAGE_URL,
 };
