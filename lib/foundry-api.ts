@@ -337,7 +337,9 @@ export function isRecoverableFoundryError(error: unknown) {
     error instanceof FoundryProxyError &&
     (error.code === "invalid_env" ||
       error.code === "timeout" ||
-      error.code === "network")
+      error.code === "network" ||
+      error.code === "upstream_error" ||
+      error.code === "invalid_response")
   );
 }
 
