@@ -138,16 +138,16 @@ export function Hero() {
           <span className="text-accent-blue">in a real lab</span>
         </h1>
 
-        <p className="mt-5 text-[15px] sm:text-lg md:text-[1.2rem] text-foreground/60 max-w-[500px] mx-auto leading-relaxed tracking-[-0.005em]">
-          The Adaptyv API connects your computational design platform to our wet
-          lab. Your users design proteins — we test them. Binding data in weeks,
-          not months.
+        <p className="mt-5 text-[15px] sm:text-lg md:text-[1.2rem] text-foreground/60 max-w-[540px] mx-auto leading-relaxed tracking-[-0.005em]">
+          Close the loop between computational design and experimental
+          validation. Submit sequences via API, get binding data back, and
+          iterate — all programmatically.
         </p>
 
         {/* Customer logos */}
         <div className="mt-12">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-[0.08em] mb-5">
-            Try out via
+            Used by
           </p>
           <div className="flex items-center justify-center gap-10">
             <a href="https://tamarindbio.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 opacity-40 hover:opacity-70 transition-opacity duration-200">
@@ -166,7 +166,7 @@ export function Hero() {
 
         <div className="mt-10 flex items-center justify-center gap-3">
           <a
-            href="#experiment-types"
+            href="#create-experiment"
             className="h-11 px-6 inline-flex items-center rounded-sm bg-accent-blue text-white text-sm font-semibold hover:bg-accent-blue-hover transition-colors duration-150 tracking-[-0.005em]"
           >
             Explore Examples

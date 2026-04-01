@@ -134,8 +134,9 @@ export function LifecycleViewer() {
     <div ref={sectionRef}>
     <ExampleBlock
       id="track-progress"
-      number={4}
+      number={3}
       title="Track Progress"
+      endpoint="GET /experiments/{id}/updates"
       description="Subscribe to experiment updates via API or webhooks. Watch a complete experiment lifecycle unfold in real time."
       left={
         <div className="space-y-4">

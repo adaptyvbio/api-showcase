@@ -211,9 +211,10 @@ export function TargetExplorer() {
   return (
     <ExampleBlock
       id="browse-targets"
-      number={3}
+      number={2}
       title="Browse Target Proteins"
-      description="Help your users find the right protein target to test against."
+      endpoint="GET /targets"
+      description={<>Choose from our catalog of <a href="https://targets.adaptyvbio.com" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">thousands of targets</a> — search by gene, organism, or protein family.</>}
       left={
         <div className="space-y-4">
           <div className="relative">

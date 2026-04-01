@@ -7,7 +7,8 @@ interface ExampleBlockProps {
   id: string;
   number: number;
   title: string;
-  description: string;
+  endpoint?: string;
+  description: React.ReactNode;
   left: React.ReactNode;
   right: React.ReactNode;
 }
@@ -16,6 +17,7 @@ export function ExampleBlock({
   id,
   number,
   title,
+  endpoint,
   description,
   left,
   right,
@@ -34,6 +36,11 @@ export function ExampleBlock({
             <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground leading-tight">
               {title}
             </h2>
+            {endpoint && (
+              <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded-sm">
+                {endpoint}
+              </span>
+            )}
           </div>
           <p className="mt-2 text-[15px] text-foreground/60 max-w-[540px] leading-relaxed tracking-[-0.005em]">
             {description}

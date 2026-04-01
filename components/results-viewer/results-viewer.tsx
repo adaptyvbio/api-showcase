@@ -169,8 +169,9 @@ export function ResultsViewer() {
   return (
     <ExampleBlock
       id="view-results"
-      number={5}
+      number={4}
       title="View Results"
+      endpoint="GET /experiments/{id}/results"
       description="Retrieve binding data programmatically. 20 VHH sequences screened against HER2 with full kinetic data."
       left={
         <div className="space-y-4">

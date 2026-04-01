@@ -1,115 +1,82 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
-const SECTIONS = [
-  { id: "experiment-types", label: "Experiment Types" },
-  { id: "create-experiment", label: "Create Experiment" },
-  { id: "browse-targets", label: "Browse Targets" },
-  { id: "track-progress", label: "Track Progress" },
-  { id: "view-results", label: "View Results" },
+const NAV_ITEMS = [
+  { label: "Services", href: "https://start.adaptyvbio.com" },
+  { label: "Blog", href: "https://adaptyvbio.com/blog" },
+  { label: "Team", href: "https://adaptyvbio.com/team" },
+  { label: "Careers", href: "https://adaptyvbio.com/careers" },
+  { label: "Docs", href: "https://docs.adaptyvbio.com" },
+  { label: "API", href: "https://docs.adaptyvbio.com/api-reference/api-introduction" },
 ];
 
 export function Nav() {
-  const [activeSection, setActiveSection] = useState("");
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
-    );
-
-    SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
-    setMobileOpen(false);
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 h-16 nav-frosted border-b border-border">
-      <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <a href="#" className="text-foreground font-semibold text-lg tracking-tight">
-          Adaptyv
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-white/80 backdrop-blur">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
+        <a
+          href="https://adaptyvbio.com"
+          aria-label="Adaptyv Bio Home"
+          className="shrink-0 flex items-center gap-2"
+        >
+          <Image
+            src="/logos/adaptyv.svg"
+            alt="Adaptyv Bio"
+            width={120}
+            height={28}
+            priority
+          />
         </a>
 
-        <div className="hidden lg:flex items-center gap-8">
-          {SECTIONS.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => scrollTo(id)}
-              className={`text-sm font-medium transition-colors duration-150 pb-0.5 border-b-2 ${
-                activeSection === id
-                  ? "text-foreground border-accent-blue"
-                  : "text-muted-foreground border-transparent hover:text-foreground"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <a
-            href="https://docs.adaptyvbio.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex h-9 px-4 items-center rounded-sm bg-accent-blue text-white text-sm font-medium hover:bg-accent-blue-hover transition-colors duration-150"
-          >
-            API Docs
-          </a>
-
-          <button
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-sm hover:bg-muted transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
-
-      {mobileOpen && (
-        <div className="lg:hidden bg-card border-b border-border shadow-none">
-          {SECTIONS.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => scrollTo(id)}
-              className="block w-full text-left px-6 py-3 text-base text-foreground hover:bg-muted transition-colors"
-            >
-              {label}
-            </button>
-          ))}
-          <div className="px-6 py-3 border-t border-border">
+        <div className="hidden md:flex items-center text-muted-foreground ml-auto">
+          {NAV_ITEMS.map((item) => (
             <a
-              href="https://docs.adaptyvbio.com"
+              key={item.href}
+              href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-9 px-4 items-center rounded-sm bg-accent-blue text-white text-sm font-medium"
+              className="hover:bg-muted py-1.5 px-3 rounded-sm font-medium text-sm transition-colors duration-200"
             >
-              API Docs
+              {item.label}
             </a>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="md:hidden ml-auto text-foreground p-2 rounded-sm hover:bg-muted"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-nav"
+        >
+          <span className="sr-only">Toggle navigation</span>
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </nav>
+
+      {isMenuOpen && (
+        <div id="mobile-nav" className="md:hidden border-t border-border bg-white">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col items-center gap-2 text-muted-foreground">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMenuOpen(false)}
+                className="w-full max-w-xs text-center hover:bg-muted py-2 px-3 rounded-sm font-medium text-sm transition-colors duration-200"
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 }

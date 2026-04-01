@@ -1,7 +1,6 @@
 import { Nav } from "@/components/nav";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/footer";
-import { ExperimentTypesSection } from "@/components/experiment-types/experiment-types";
 import { ExperimentBuilder } from "@/components/experiment-builder/experiment-form";
 import { TargetExplorer } from "@/components/target-catalog/target-explorer";
 import { LifecycleViewer } from "@/components/experiment-lifecycle/lifecycle-viewer";
@@ -17,11 +16,6 @@ export default function Home() {
         <div className="pb-20">
           <div className="border-t border-border" />
 
-          <div className="mt-20">
-            <ExperimentTypesSection />
-          </div>
-
-          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
           <div className="mt-20">
             <ExperimentBuilder />
           </div>

@@ -10,6 +10,10 @@ import {
   X,
   CheckCircle2,
   Target,
+  Search,
+  Activity,
+  Thermometer,
+  Beaker,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -23,19 +27,31 @@ import { ExampleBlock } from "@/components/shared/example-block";
 import { ApiPanel } from "@/components/shared/api-panel";
 import type { DemoSequence } from "@/lib/mock-data";
 
+const TYPE_ICONS: Record<string, typeof Beaker> = {
+  expression: Beaker,
+  screening: Search,
+  affinity: Activity,
+  thermostability: Thermometer,
+  fluorescence: Sparkles,
+};
+
+// Start with first 5 sequences preloaded
+const INITIAL_SEQUENCES = DEMO_SEQUENCES.slice(0, 5);
+
 export function ExperimentBuilder() {
   const [experimentType, setExperimentType] = useState("screening");
-  const [targetIdx, setTargetIdx] = useState(0);
-  const [method, setMethod] = useState("bli");
-  const [sequences, setSequences] = useState<DemoSequence[]>([]);
+  const [targetIdx, setTargetIdx] = useState(0); // EGFR is index 1, HER2 is 0 — let's default to EGFR
+  const [sequences, setSequences] = useState<DemoSequence[]>(INITIAL_SEQUENCES);
   const [submitted, setSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const typeInfo = EXPERIMENT_TYPES.find((t) => t.type === experimentType);
   const needsTarget = typeInfo?.requiresTarget ?? false;
-  const hasMethods = (typeInfo?.methods.length ?? 0) > 0;
 
-  const handleGenerateExamples = () => {
+  // Default to EGFR target (index 1)
+  const effectiveTargetIdx = needsTarget ? (targetIdx === 0 ? 1 : targetIdx) : targetIdx;
+
+  const handleGenerateMore = () => {
     setSequences([...DEMO_SEQUENCES]);
   };
 
@@ -58,7 +74,6 @@ export function ExperimentBuilder() {
       }
     };
     reader.readAsText(file);
-    // Reset file input so same file can be re-uploaded
     e.target.value = "";
   };
 
@@ -82,8 +97,7 @@ export function ExperimentBuilder() {
   const requestPayload = {
     experiment_spec: {
       experiment_type: experimentType,
-      ...(hasMethods ? { method } : {}),
-      ...(needsTarget ? { target_id: PRESET_TARGETS[targetIdx].id } : {}),
+      ...(needsTarget ? { target_id: PRESET_TARGETS[effectiveTargetIdx]?.id } : {}),
       sequences: sequences.length > 0
         ? sequencesMap
         : { "<name>": "<amino_acid_sequence>" },
@@ -94,58 +108,52 @@ export function ExperimentBuilder() {
   return (
     <ExampleBlock
       id="create-experiment"
-      number={2}
+      number={1}
       title="Create an Experiment"
-      description="Build an experiment step by step: pick a type, select a target, add sequences, and submit to the lab."
+      endpoint="POST /experiments"
+      description="Pick an assay type, select a target protein, add your sequences, and submit."
       left={
         <div className="space-y-5">
-          {/* Experiment Type */}
+          {/* Experiment Type Cards */}
           <div>
             <label className="text-xs font-medium text-foreground mb-2 block">
               Experiment Type
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {EXPERIMENT_TYPES.map((et) => (
-                <button
-                  key={et.type}
-                  onClick={() => setExperimentType(et.type)}
-                  className={cn(
-                    "text-left px-3 py-2 rounded-sm border text-xs transition-all",
-                    experimentType === et.type
-                      ? "border-accent-blue bg-accent-blue/[0.04] text-accent-blue font-medium"
-                      : "border-border text-muted-foreground hover:border-border hover:bg-muted/30"
-                  )}
-                >
-                  {et.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Method (BLI / SPR) */}
-          {hasMethods && (
-            <div>
-              <label className="text-xs font-medium text-foreground mb-2 block">
-                Method
-              </label>
-              <div className="flex gap-2">
-                {typeInfo!.methods.map((m) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {EXPERIMENT_TYPES.map((et) => {
+                const Icon = TYPE_ICONS[et.type] ?? Beaker;
+                const isSelected = experimentType === et.type;
+                return (
                   <button
-                    key={m}
-                    onClick={() => setMethod(m)}
+                    key={et.type}
+                    onClick={() => setExperimentType(et.type)}
                     className={cn(
-                      "px-3 py-1.5 rounded-sm border text-xs font-mono uppercase transition-all",
-                      method === m
-                        ? "border-accent-blue bg-accent-blue/[0.04] text-accent-blue font-medium"
-                        : "border-border text-muted-foreground hover:bg-muted/30"
+                      "text-left px-3 py-2.5 rounded-sm border transition-all flex items-start gap-2.5",
+                      isSelected
+                        ? "border-accent-blue bg-accent-blue/[0.04]"
+                        : "border-border hover:bg-muted/30"
                     )}
                   >
-                    {m}
+                    <Icon className={cn(
+                      "w-4 h-4 mt-0.5 shrink-0",
+                      isSelected ? "text-accent-blue" : "text-muted-foreground"
+                    )} />
+                    <div className="min-w-0">
+                      <div className={cn(
+                        "text-xs font-medium",
+                        isSelected ? "text-accent-blue" : "text-foreground"
+                      )}>
+                        {et.label}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground leading-snug mt-0.5">
+                        {et.dataReturned}
+                      </div>
+                    </div>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* Target Selection */}
           {needsTarget && (
@@ -155,7 +163,7 @@ export function ExperimentBuilder() {
                 Target Protein
               </label>
               <select
-                value={targetIdx}
+                value={effectiveTargetIdx}
                 onChange={(e) => setTargetIdx(Number(e.target.value))}
                 className="w-full h-10 rounded-sm border border-input bg-background px-3 text-sm"
               >
@@ -181,12 +189,12 @@ export function ExperimentBuilder() {
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <Button
-                    onClick={handleGenerateExamples}
+                    onClick={handleGenerateMore}
                     variant="outline"
                     className="text-xs h-8"
                   >
                     <Sparkles className="w-3 h-3 mr-1.5" />
-                    Generate 20 Examples
+                    Generate Examples
                   </Button>
                   <Button
                     onClick={() => fileInputRef.current?.click()}
@@ -197,9 +205,6 @@ export function ExperimentBuilder() {
                     Upload CSV / FASTA
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground/60">
-                  Supports .fasta, .fa, .csv, .tsv, .txt
-                </p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -214,7 +219,7 @@ export function ExperimentBuilder() {
                     Clear all
                   </button>
                 </div>
-                <div className="border border-border rounded-sm overflow-hidden max-h-[280px] overflow-y-auto">
+                <div className="border border-border rounded-sm overflow-hidden max-h-[200px] overflow-y-auto">
                   <table className="w-full text-xs">
                     <thead className="sticky top-0 z-10">
                       <tr className="bg-secondary/50 border-b border-border">
@@ -269,12 +274,20 @@ export function ExperimentBuilder() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
+                    onClick={handleGenerateMore}
+                    variant="outline"
+                    className="text-xs h-7"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Generate more
+                  </Button>
+                  <Button
                     onClick={() => fileInputRef.current?.click()}
                     variant="outline"
                     className="text-xs h-7"
                   >
                     <Upload className="w-3 h-3 mr-1" />
-                    Add more
+                    Upload CSV / FASTA
                   </Button>
                 </div>
               </div>
