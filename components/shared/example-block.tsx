@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { Code2, ChevronDown } from "lucide-react";
+
 interface ExampleBlockProps {
   id: string;
   number: number;
@@ -19,6 +22,8 @@ export function ExampleBlock({
   left,
   right,
 }: ExampleBlockProps) {
+  const [codeOpen, setCodeOpen] = useState(false);
+
   return (
     <section id={id} className="scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,7 +33,7 @@ export function ExampleBlock({
             {String(number).padStart(2, "0")}
           </span>
           <div className="flex items-center gap-3 mt-3">
-            <h2 className="text-2xl font-semibold tracking-[-0.03em] text-foreground">
+            <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground leading-tight">
               {title}
             </h2>
             {isLive ? (
@@ -42,18 +47,43 @@ export function ExampleBlock({
               </span>
             )}
           </div>
-          <p className="mt-2 text-[15px] text-[#3C4257] max-w-[540px] leading-relaxed tracking-[-0.005em]">
+          <p className="mt-2 text-[15px] text-foreground/60 max-w-[540px] leading-relaxed tracking-[-0.005em]">
             {description}
           </p>
         </div>
 
         {/* 50/50 split container */}
-        <div className="rounded-xl border border-border overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-          <div className="bg-white p-6 lg:p-8 border-r border-border/0 lg:border-r-border">
-            {left}
+        <div className="rounded-xl border border-border overflow-hidden shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="bg-white p-6 lg:p-8 lg:border-r border-border">
+              {left}
+            </div>
+
+            {/* Desktop: always show code panel */}
+            <div className="hidden lg:block bg-[#13161B] border-t-[1px] border-white/[0.06]">
+              {right}
+            </div>
           </div>
-          <div className="bg-[#1C2027] border-t lg:border-t-0">
-            {right}
+
+          {/* Mobile: collapsible code panel */}
+          <div className="lg:hidden border-t border-border">
+            <button
+              onClick={() => setCodeOpen(!codeOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-[#1C2027] text-[#E4E4E7] text-sm font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <Code2 className="w-4 h-4 text-[#9CA3B0]" />
+                View API Request / Response
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-[#9CA3B0] transition-transform duration-200 ${codeOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {codeOpen && (
+              <div className="bg-[#13161B] max-h-[400px] overflow-auto">
+                {right}
+              </div>
+            )}
           </div>
         </div>
       </div>

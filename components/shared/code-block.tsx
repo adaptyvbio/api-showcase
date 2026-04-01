@@ -77,7 +77,7 @@ export function CodeBlock({ data, maxHeight = "400px" }: CodeBlockProps) {
   return (
     <div className="relative">
       <pre
-        className="font-mono text-[13px] leading-[1.65] p-4 overflow-auto code-scroll text-[#ABB2BF] select-text"
+        className="font-mono text-[12px] leading-[1.7] p-4 overflow-auto code-scroll text-[#ABB2BF] select-text"
         style={{ maxHeight }}
       >
         <code>{elements}</code>

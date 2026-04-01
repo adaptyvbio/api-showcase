@@ -2,6 +2,7 @@
 
 import { Nav } from "@/components/nav";
 import { Hero } from "@/components/hero";
+import { Footer } from "@/components/footer";
 import { TargetExplorer } from "@/components/target-catalog/target-explorer";
 import { ExperimentBuilder } from "@/components/experiment-builder/experiment-form";
 import { CostEstimator } from "@/components/cost-estimator/cost-estimator";
@@ -15,38 +16,41 @@ export default function Home() {
       <Nav />
       <main className="flex-1">
         <Hero />
-        <div className="divide-y divide-border/50">
-          <TargetExplorer />
-          <ExperimentBuilder />
-          <CostEstimator />
-          <LifecycleViewer />
-          <ResultsViewer />
-          <AiChat />
-        </div>
-      </main>
-      <footer className="border-t border-border py-8 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-muted-foreground">
-          <span>&copy; 2026 Adaptyv Bio. All rights reserved.</span>
-          <div className="flex gap-4">
-            <a
-              href="https://docs.adaptyvbio.com"
-              className="hover:text-foreground transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              API Docs
-            </a>
-            <a
-              href="https://adaptyvbio.com"
-              className="hover:text-foreground transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Website
-            </a>
+
+        <div className="pb-20">
+          <div className="border-t border-border" />
+
+          <div className="mt-20">
+            <TargetExplorer />
+          </div>
+
+          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
+          <div className="mt-20">
+            <ExperimentBuilder />
+          </div>
+
+          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
+          <div className="mt-20">
+            <CostEstimator />
+          </div>
+
+          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
+          <div className="mt-20">
+            <LifecycleViewer />
+          </div>
+
+          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
+          <div className="mt-20">
+            <ResultsViewer />
+          </div>
+
+          <div className="border-t border-border max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" />
+          <div className="mt-20">
+            <AiChat />
           </div>
         </div>
-      </footer>
+      </main>
+      <Footer />
     </>
   );
 }

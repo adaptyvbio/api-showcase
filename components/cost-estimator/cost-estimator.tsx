@@ -22,9 +22,10 @@ export function CostEstimator() {
   const [apiTab, setApiTab] = useState<"request" | "response">("request");
   const [apiStatus, setApiStatus] = useState<number | null>(null);
 
+  const PLACEHOLDER_SEQ = "EVQLVESGGGLVQPGGSLRLSCAASGFTFSSYAMSWVRQAPGKGLEWVSAISGSGGSTYYADSVKGRFTISRDNSKNTLYLQMNSLRAEDTAVYYCAK";
   const sequences: Record<string, string> = {};
   for (let i = 0; i < seqCount; i++) {
-    sequences[`seq_${i + 1}`] = "EVQLVESGGGLVQPGG...";
+    sequences[`seq_${i + 1}`] = PLACEHOLDER_SEQ;
   }
 
   const requestPayload = {
@@ -59,10 +60,10 @@ export function CostEstimator() {
 
   return (
     <ExampleBlock
-      id="cost"
+      id="get-a-quote"
       number={3}
-      title="Cost Estimator"
-      description="Get real-time pricing for experiments. Select your parameters and see a live cost breakdown from the API."
+      title="Get a Quote"
+      description="Show your users transparent pricing before they commit."
       isLive
       left={
         <div className="space-y-5">

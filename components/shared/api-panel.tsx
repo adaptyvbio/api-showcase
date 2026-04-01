@@ -54,14 +54,14 @@ export function ApiPanel({
   const responseDisabled = !hasResponse && !isLoading;
 
   return (
-    <div className="flex flex-col h-full min-h-[400px] bg-[#1C2027] text-[#E4E4E7]">
+    <div className="flex flex-col h-full min-h-[400px] bg-[#13161B] text-[#E4E4E7]">
       {/* Tab bar */}
-      <div className="flex items-center gap-1 px-4 h-11 bg-[#282D37] border-b border-white/[0.15] shrink-0">
+      <div className="flex items-center gap-1 px-4 h-11 bg-[#1C2027] border-b border-white/[0.15] shrink-0">
         <button
           onClick={() => onTabChange?.("request")}
           className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
             activeTab === "request"
-              ? "bg-[#1C2027] text-[#E4E4E7]"
+              ? "bg-[#13161B] text-[#E4E4E7]"
               : "text-[#9CA3B0] hover:text-[#E4E4E7]/70"
           }`}
         >
@@ -73,7 +73,7 @@ export function ApiPanel({
             responseDisabled
               ? "text-[#9CA3B0]/50 cursor-not-allowed"
               : activeTab === "response"
-                ? "bg-[#1C2027] text-[#E4E4E7]"
+                ? "bg-[#13161B] text-[#E4E4E7]"
                 : "text-[#9CA3B0] hover:text-[#E4E4E7]/70"
           }`}
         >

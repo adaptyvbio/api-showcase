@@ -7,29 +7,29 @@ export const MOCK_EXPERIMENT_RESPONSE = {
 
 export const PRESET_TARGETS = [
   {
-    id: "her2-uuid",
-    name: "Human Her2 / ErbB2 (498-648) Protein, His Tag",
+    id: "019a03da-b87f-7e62-9ba1-7b776b7c8eb3",
+    name: "Canine HER2 / ErbB2 Protein (His Tag)",
     gene: "ERBB2",
   },
   {
-    id: "tnf-uuid",
-    name: "Human TNF-alpha Protein",
-    gene: "TNF",
+    id: "019a03da-b87f-7546-9184-8b5637390104",
+    name: "Canine BLyS / TNFSF13B / BAFF Protein (Fc Tag)",
+    gene: "TNFSF13B",
   },
   {
-    id: "pdl1-uuid",
-    name: "Human PD-L1 / B7-H1 Protein, Fc Tag",
+    id: "019a03da-b87f-7b5c-a2ed-eeeef034252d",
+    name: "Canine PD-L1 / B7-H1 / CD274 Protein (ECD, Fc Tag)",
     gene: "CD274",
   },
   {
-    id: "il6-uuid",
-    name: "Human IL-6 Protein",
+    id: "019a03da-b87f-7dd7-843f-566bbe08b5c7",
+    name: "Cynomolgus IL-6 Protein, His Tag",
     gene: "IL6",
   },
   {
-    id: "vegf-uuid",
-    name: "Human VEGF165 Protein",
-    gene: "VEGFA",
+    id: "019a03da-b87f-7cb5-8896-3c6887a2b39f",
+    name: "Cynomolgus VEGFR2 / Flk-1 / CD309 Protein (His Tag)",
+    gene: "VEGFR2",
   },
 ];
 

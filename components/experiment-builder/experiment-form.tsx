@@ -48,10 +48,10 @@ export function ExperimentBuilder() {
 
   return (
     <ExampleBlock
-      id="builder"
+      id="create-experiment"
       number={2}
-      title="Experiment Builder"
-      description="Build an experiment request interactively. Watch the JSON payload assemble in real-time as you fill the form."
+      title="Create an Experiment"
+      description="Add a 'Send to Lab' button — one API call to submit sequences for testing."
       isLive={false}
       left={
         <div className="space-y-5">

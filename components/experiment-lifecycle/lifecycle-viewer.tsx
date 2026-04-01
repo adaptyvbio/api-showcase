@@ -33,10 +33,10 @@ export function LifecycleViewer() {
 
   return (
     <ExampleBlock
-      id="lifecycle"
+      id="track-progress"
       number={4}
-      title="Experiment Lifecycle"
-      description="Walk through the 7 stages of an experiment. Each stage shows how the API response evolves."
+      title="Track Progress"
+      description="Keep your users in the loop as their experiment moves through the lab."
       isLive={false}
       left={
         <div className="space-y-6">

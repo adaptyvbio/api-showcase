@@ -170,7 +170,7 @@ export function AiChat() {
 
   return (
     <ExampleBlock
-      id="assistant"
+      id="ai-assistant"
       number={6}
       title="AI Assistant"
       description='Chat with an AI that can search targets, estimate costs, and create experiments. Try "Search for HER2 targets" or "Estimate cost for a BLI experiment".'

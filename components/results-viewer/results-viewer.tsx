@@ -39,10 +39,10 @@ export function ResultsViewer() {
 
   return (
     <ExampleBlock
-      id="results"
+      id="view-results"
       number={5}
-      title="Results Viewer"
-      description="Visualize binding affinity results with KD values, color-coded by binding strength. Hover for kon/koff details."
+      title="View Results"
+      description="Deliver actionable binding data directly in your product."
       isLive={false}
       left={
         <div className="space-y-4">

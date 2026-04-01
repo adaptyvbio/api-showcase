@@ -67,10 +67,10 @@ export function TargetExplorer() {
 
   return (
     <ExampleBlock
-      id="targets"
+      id="browse-targets"
       number={1}
-      title="Target Catalog Explorer"
-      description="Search 2,400+ protein targets with live API calls. Click a target to see full details including sequence, organism, and 3D structure."
+      title="Browse Target Proteins"
+      description="Help your users find the right protein target to test against."
       isLive
       left={
         <div className="space-y-4">
