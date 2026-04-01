@@ -56,7 +56,6 @@ export function LifecycleViewer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isManual, setIsManual] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const feedEndRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   // Auto-start when section scrolls into view
@@ -96,10 +95,7 @@ export function LifecycleViewer() {
     };
   }, [isPlaying, isManual]);
 
-  // Auto-scroll feed
-  useEffect(() => {
-    feedEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [visibleCount]);
+  // No auto-scroll — timeline is visible in full
 
   // Click on an update → switch to manual mode, jump to that step
   const handleClickUpdate = (idx: number) => {
@@ -137,16 +133,7 @@ export function LifecycleViewer() {
       isLive={false}
       left={
         <div className="space-y-4">
-          {/* Experiment code */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="font-mono">{DEMO_EXPERIMENT_CODE}</span>
-            <span>·</span>
-            <span>Anti-HER2 VHH Binding Screen</span>
-          </div>
-
           {/* Timeline */}
-          <div className="border border-border rounded-lg overflow-hidden">
-            <div className="max-h-[440px] overflow-y-auto p-4">
               <div className="relative">
                 {/* Vertical line */}
                 <div className="absolute left-[13px] top-4 bottom-4 w-px bg-border" />
@@ -226,11 +213,8 @@ export function LifecycleViewer() {
                       </div>
                     );
                   })}
-                  <div ref={feedEndRef} />
                 </div>
               </div>
-            </div>
-          </div>
         </div>
       }
       right={
