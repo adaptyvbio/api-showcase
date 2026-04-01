@@ -135,14 +135,8 @@ export function ProteinViewer({
       className={`relative rounded-lg overflow-hidden ${className}`}
       style={{ height, minHeight: height }}
     >
-      {/* Dark gradient background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, #1a1f2e 0%, #0e1116 100%)",
-        }}
-      />
+      {/* Light background */}
+      <div className="absolute inset-0 bg-muted" />
 
       {/* 3Dmol container */}
       <div
@@ -154,22 +148,14 @@ export function ProteinViewer({
       {/* Loading state */}
       {status === "loading" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="flex gap-1">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-1 h-1 rounded-full bg-white/30 animate-bounce"
-                style={{ animationDelay: `${i * 150}ms` }}
-              />
-            ))}
-          </div>
+          <div className="w-4 h-4 border-2 border-[#E4E4E7] border-t-[#0070F3] rounded-full animate-spin" />
         </div>
       )}
 
       {/* Error state */}
       {status === "error" && (
         <div className="absolute inset-0 z-20 flex items-center justify-center">
-          <div className="text-[10px] font-mono text-white/30">
+          <div className="text-[10px] font-mono text-muted-foreground">
             No structure
           </div>
         </div>
@@ -177,13 +163,10 @@ export function ProteinViewer({
 
       {/* Source label */}
       {status === "ready" && structureSource && (
-        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-black/40 text-[9px] font-mono text-white/50">
+        <div className="absolute bottom-1.5 right-1.5 z-20 px-1.5 py-0.5 rounded bg-card text-[10px] font-mono text-muted-foreground">
           {structureSource}
         </div>
       )}
-
-      {/* Subtle inner border */}
-      <div className="absolute inset-0 z-20 rounded-lg border border-white/[0.06] pointer-events-none" />
     </div>
   );
 }

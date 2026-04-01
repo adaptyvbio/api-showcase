@@ -89,7 +89,7 @@ export function Nav() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden bg-white border-b border-border shadow-lg">
+        <div className="lg:hidden bg-card border-b border-border shadow-lg">
           {SECTIONS.map(({ id, label }) => (
             <button
               key={id}

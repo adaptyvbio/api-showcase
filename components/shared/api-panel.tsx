@@ -59,7 +59,7 @@ export function ApiPanel({
       <div className="flex items-center gap-1 px-4 h-11 bg-[#1C2027] border-b border-white/[0.15] shrink-0">
         <button
           onClick={() => onTabChange?.("request")}
-          className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
+          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
             activeTab === "request"
               ? "bg-[#13161B] text-[#E4E4E7]"
               : "text-[#9CA3B0] hover:text-[#E4E4E7]/70"
@@ -69,7 +69,7 @@ export function ApiPanel({
         </button>
         <button
           onClick={() => !responseDisabled && onTabChange?.("response")}
-          className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
+          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 ${
             responseDisabled
               ? "text-[#9CA3B0]/50 cursor-not-allowed"
               : activeTab === "response"
@@ -93,7 +93,7 @@ export function ApiPanel({
       </div>
 
       {/* URL bar */}
-      <div className="flex items-center gap-2 px-4 py-2 bg-[rgba(0,0,0,0.15)] border-b border-white/[0.08] shrink-0">
+      <div className="flex items-center gap-2 px-4 py-2 bg-[#1C2027] border-b border-white/[0.08] shrink-0">
         <HttpMethodBadge method={method} />
         <span className="font-mono text-xs truncate">
           <span className="text-[#5C6370]">{baseUrl}</span>
@@ -106,7 +106,7 @@ export function ApiPanel({
         <div className="border-b border-white/[0.08] shrink-0">
           <button
             onClick={() => setHeadersOpen(!headersOpen)}
-            className="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-white/[0.02] transition-colors"
+            className="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-[#242A35] transition-colors"
           >
             <ChevronRight
               className={`w-3 h-3 text-[#9CA3B0] transition-transform duration-200 ${headersOpen ? "rotate-90" : ""}`}
@@ -157,7 +157,7 @@ export function ApiPanel({
               />
             </>
           ) : (
-            <div className="p-4 text-[13px] font-mono text-[#5C6370] italic">
+            <div className="p-4 text-xs font-mono text-[#5C6370] italic">
               No request body
             </div>
           )
@@ -170,7 +170,7 @@ export function ApiPanel({
             />
           </>
         ) : (
-          <div className="p-4 text-[13px] font-mono text-[#5C6370] flex items-center gap-2">
+          <div className="p-4 text-xs font-mono text-[#5C6370] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#5C6370]/50" />
             Waiting for request...
           </div>

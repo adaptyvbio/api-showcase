@@ -147,45 +147,34 @@ export function CostEstimator() {
             disabled={isLoading}
             className="bg-accent-blue hover:bg-accent-blue-hover text-white"
           >
-            <Calculator className="w-3.5 h-3.5 mr-1.5" />
             Estimate Cost
           </Button>
 
           {result?.breakdown && (
-            <div className="rounded-lg border border-border p-4 space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <DollarSign className="w-4 h-4 text-accent-blue" />
+            <div className="rounded-lg bg-[#F4F4F5] p-5 space-y-3">
+              <div className="text-sm font-medium text-foreground">
                 Cost Breakdown
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <FlaskConical className="w-3.5 h-3.5" />
-                    Assay
-                  </span>
-                  <span className="font-mono">
+                  <span className="text-muted-foreground">Assay</span>
+                  <span className="font-mono text-foreground">
                     {formatCents(result.breakdown.assay.subtotal_cents)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-1.5 text-muted-foreground">
-                    <Package className="w-3.5 h-3.5" />
-                    Materials
-                  </span>
-                  <span className="font-mono">
+                  <span className="text-muted-foreground">Materials</span>
+                  <span className="font-mono text-foreground">
                     {formatCents(result.breakdown.materials.subtotal_cents)}
                   </span>
                 </div>
-                <div className="border-t border-border pt-2 flex justify-between items-center">
-                  <span className="font-medium">Total</span>
-                  <span className="font-mono font-bold text-accent-blue">
+                <div className="border-t border-[#E4E4E7] pt-2 flex justify-between items-center">
+                  <span className="font-semibold text-foreground">Total</span>
+                  <span className="font-mono font-bold text-lg text-foreground">
                     {formatCents(result.breakdown.total_cents)}
                   </span>
                 </div>
               </div>
-              <Badge variant="outline" className="text-[10px] font-mono">
-                {result.breakdown.pricing_version}
-              </Badge>
             </div>
           )}
         </div>

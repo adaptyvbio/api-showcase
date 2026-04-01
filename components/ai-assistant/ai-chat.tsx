@@ -180,27 +180,23 @@ export function AiChat() {
           {/* Messages */}
           <div className="flex-1 overflow-auto space-y-4 mb-4">
             {messages.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <Bot className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">
-                  Ask me about protein targets, experiment costs, or creating
-                  experiments.
+              <div className="py-8 space-y-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Try these example prompts:
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center mt-4">
-                  {[
-                    "Search for HER2 targets",
-                    "Estimate cost for BLI",
-                    "Create an experiment",
-                  ].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() => setInput(suggestion)}
-                      className="px-3 py-1.5 rounded-full border border-border text-xs text-muted-foreground hover:text-foreground hover:border-accent-blue/30 transition-colors"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
+                {[
+                  "Search for HER2 targets",
+                  "Estimate cost for a BLI experiment",
+                  "Create an experiment",
+                ].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => setInput(suggestion)}
+                    className="block w-full text-left px-3 py-2.5 rounded-lg border border-border text-sm text-[#3C4257] hover:bg-muted hover:border-[#D4D4D8] transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
               </div>
             )}
 
@@ -295,7 +291,7 @@ export function AiChat() {
             {toolCallLog.length > 0 && (
               <Badge
                 variant="outline"
-                className="text-[10px] font-mono ml-auto border-white/10 text-[#9CA3B0]"
+                className="text-[10px] font-mono ml-auto border-white/[0.08] text-[#9CA3B0]"
               >
                 {toolCallLog.length}
               </Badge>
@@ -304,7 +300,7 @@ export function AiChat() {
 
           <div className="flex-1 overflow-auto code-scroll p-4 space-y-3">
             {toolCallLog.length === 0 ? (
-              <div className="text-[13px] font-mono text-[#6B7280] flex items-center gap-2">
+              <div className="text-xs font-mono text-[#6B7280] flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#6B7280]/50" />
                 No tool calls yet...
               </div>
