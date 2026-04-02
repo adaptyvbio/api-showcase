@@ -47,7 +47,7 @@ export function ApiPanel({
   isLoading = false,
   activeTab,
   onTabChange,
-  baseUrl = "https://agents.adaptyvbio.com/v1",
+  baseUrl = "https://foundry-api-public.adaptyvbio.com/api/v1",
   autoScroll = false,
 }: ApiPanelProps) {
   const [headersOpen, setHeadersOpen] = useState(false);
